@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ParkIn</string>
     <string name="title_activity_maps">ParkIn</string>
+    <string name="message_bienvenue">Bienvenue sur ParkIn</string>
 </resources>
