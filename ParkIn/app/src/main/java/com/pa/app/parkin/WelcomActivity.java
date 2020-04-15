@@ -16,7 +16,7 @@ public class WelcomActivity extends Activity {
         setContentView(R.layout.welcom_activity);
 
         Button connexionButton = (Button) findViewById(R.id.connexion_button);
-        Button subscriptionButton = (Button) findViewById(R.id.subscription_button);
+        final Button subscriptionButton = (Button) findViewById(R.id.subscription_button);
 
         connexionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -32,6 +32,9 @@ public class WelcomActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Log.i("buttons", "clicked on subscription button");
+
+                Intent subscriptionIntent = new Intent(WelcomActivity.this, SubscriptionActivity.class);
+                startActivity(subscriptionIntent);
             }
         });
     }
