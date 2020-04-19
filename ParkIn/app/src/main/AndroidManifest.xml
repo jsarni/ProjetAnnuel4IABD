@@ -8,6 +8,7 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -15,6 +16,7 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         android:theme="@style/AppTheme">
 
         <!--
@@ -30,7 +32,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <activity
-            android:name=".WelcomActivity"
+            android:name=".Activities.WelcomActivity"
             android:label="ParkIn" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,19 +42,19 @@
         </activity>
 
         <activity
-            android:name=".MapsActivity">
+            android:name=".Activities.MapsActivity">
         </activity>
 
         <activity
-            android:name=".SubscriptionActivity">
+            android:name=".Activities.SubscriptionActivity">
         </activity>
 
         <activity
-            android:name=".SubscriptionSuccessActivity">
+            android:name=".Activities.SubscriptionSuccessActivity">
         </activity>
 
         <activity
-            android:name=".ConnectionActivity">
+            android:name=".Activities.ConnectionActivity">
         </activity>
 
     </application>

@@ -1,4 +1,4 @@
-package com.pa.app.parkin;
+package com.pa.app.parkin.Activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +11,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+
+import com.pa.app.parkin.DatabaseTasks.LoadUserTask;
+import com.pa.app.parkin.R;
+import com.pa.app.parkin.User;
 
 public class ConnectionActivity extends Activity {
 
@@ -29,14 +33,21 @@ public class ConnectionActivity extends Activity {
             public void onClick(View v) {
                 Log.i("buttons", "clicked on connexion button to validate connexion");
 
-                DatabaseConf mydb = DatabaseConf.getInstance();
+                LoadUserTask myLoadTask = new LoadUserTask();
 
-                Log.i("buttons", userEmail.getText().toString());
-                Log.i("buttons", userPassword.getText().toString());
-                User user = mydb.loadUserFromDatabase(
-                        userEmail.getText().toString(),
-                        userPassword.getText().toString()
-                );
+                User user = null;
+
+                try {
+                    Log.i("Connexion", "launched load Task");
+                    user = myLoadTask.execute(
+                            userEmail.getText().toString(),
+                            userPassword.getText().toString()
+                    ).get();
+                    Log.i("Connexion", "finished load Task with no error");
+                } catch (Exception e) {
+                    Log.i("Connexion", "finished load Task with error");
+                    Log.i("LoadingException", e.getMessage());
+                }
 
 
                 if (user == null) {

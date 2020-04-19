@@ -1,4 +1,4 @@
-package com.pa.app.parkin;
+package com.pa.app.parkin.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+
+import com.pa.app.parkin.R;
 
 public class SubscriptionSuccessActivity extends Activity {
 

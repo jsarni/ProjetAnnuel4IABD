@@ -1,4 +1,4 @@
-package com.pa.app.parkin;
+package com.pa.app.parkin.Activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,6 +11,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+
+import com.pa.app.parkin.DatabaseTasks.SaveUserTask;
+import com.pa.app.parkin.R;
+import com.pa.app.parkin.User;
+
 
 public class SubscriptionActivity extends Activity {
 
@@ -42,8 +47,14 @@ public class SubscriptionActivity extends Activity {
                             userPassword.getText().toString()
                     );
 
-                    DatabaseConf mydb = DatabaseConf.getInstance();
-                    boolean subscriptionResult = mydb.saveUserToDatabase(user);
+                    SaveUserTask myLoadTask = new SaveUserTask();
+
+                    boolean subscriptionResult = false;
+                    try {
+                        subscriptionResult = myLoadTask.execute(user).get();
+                    } catch (Exception e) {
+                        Log.e("SubscriptionError", e.getMessage());
+                    }
 
                     if (subscriptionResult){
                         Log.i("buttons", "clicked on subscription button");
