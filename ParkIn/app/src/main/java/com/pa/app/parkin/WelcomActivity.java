@@ -23,8 +23,8 @@ public class WelcomActivity extends Activity {
             public void onClick(View v) {
                 Log.i("buttons", "clicked on connexion button");
 
-                Intent mapIntent = new Intent(WelcomActivity.this, MapsActivity.class);
-                startActivity(mapIntent);
+                Intent connectionIntent = new Intent(WelcomActivity.this, ConnectionActivity.class);
+                startActivity(connectionIntent);
             }
         });
 

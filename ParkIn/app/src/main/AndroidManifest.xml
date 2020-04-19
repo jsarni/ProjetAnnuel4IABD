@@ -26,9 +26,10 @@
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
         <meta-data
+
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-        *<activity
+        <activity
             android:name=".WelcomActivity"
             android:label="ParkIn" >
             <intent-filter>
@@ -44,6 +45,14 @@
 
         <activity
             android:name=".SubscriptionActivity">
+        </activity>
+
+        <activity
+            android:name=".SubscriptionSuccessActivity">
+        </activity>
+
+        <activity
+            android:name=".ConnectionActivity">
         </activity>
 
     </application>

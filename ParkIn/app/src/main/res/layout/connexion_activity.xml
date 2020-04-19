@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/connexion_text"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textSize="45sp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_weight="1"
+        android:text="Connexion A ParkIn" />
+
+    <EditText
+        android:id="@+id/con_email"
+        android:layout_width="match_parent"
+        android:hint="Email"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_weight="0.03"
+        android:layout_marginBottom="20dp"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/con_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mot de passe"
+        android:ems="10"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_weight="0.03"
+        android:layout_marginBottom="70dp"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/connexion_button"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.01"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="100dp"
+        android:text="Je me connecte" />
+</LinearLayout>

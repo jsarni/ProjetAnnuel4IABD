@@ -31,6 +31,7 @@ public class SubscriptionActivity extends Activity {
         validationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.i("buttons", "Clicked on subscription button");
                 if (userPassword.getText().toString().equals(userPasswordConfirmation.getText().toString())) {
 
                     User user = new User(
@@ -41,7 +42,8 @@ public class SubscriptionActivity extends Activity {
                             userPassword.getText().toString()
                     );
 
-                    boolean subscriptionResult = user.saveToDatabase();
+                    DatabaseConf mydb = DatabaseConf.getInstance();
+                    boolean subscriptionResult = mydb.saveUserToDatabase(user);
 
                     if (subscriptionResult){
                         Log.i("buttons", "clicked on subscription button");

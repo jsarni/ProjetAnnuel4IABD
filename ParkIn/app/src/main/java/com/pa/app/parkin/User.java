@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import java.io.Serializable;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,12 +38,15 @@ public class User implements Serializable {
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
         String subscriptionDate = dateFormat.format(calendar.getTime().getTime());
 
+
+
         this.lastname = lastname;
         this.firstname = firstname;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.password = password;
-        this.subscriptionDate = Date.valueOf(subscriptionDate);
+        this.subscriptionDate = null;
+//                Date.valueOf(subscriptionDate);
 //                LocalDateTime.parse(dateFormat.format(LocalDateTime.now()));
     }
 
@@ -80,6 +84,10 @@ public class User implements Serializable {
         return subscriptionDate;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -106,7 +114,7 @@ public class User implements Serializable {
                 '}';
     }
 
-    public boolean saveToDatabase() {
+    public boolean saveUserToDatabase(User user) {
         try{
             String driverName = "oracle.jdbc.driver.OracleDriver";
             Class.forName(driverName);
@@ -116,21 +124,22 @@ public class User implements Serializable {
             String url = mydb.getUrl();
             String username = mydb.getUsername();
             String password = mydb.getPassword();
+            String usersTable = mydb.getUsersTable();
 
             Connection connection = DriverManager.getConnection(url, username, password);
 
-            Statement stmt = connection.createStatement();
             String insertQuery =
-                    "INSERT INTO %s (user_email, user_lastname, user_firstname, user_phone, user_password, user_subscription_date) " +
+                    "INSERT INTO ? (user_email, user_lastname, user_firstname, user_phone, user_password, user_subscription_date) " +
                             "VALUES(?, ?, ?, ?, ?, ?);";
 
             PreparedStatement preparedStmt = connection.prepareStatement(insertQuery);
-            preparedStmt.setString (1, this.getEmail());
-            preparedStmt.setString (2, this.getLastname());
-            preparedStmt.setString (3, this.getFirstname());
-            preparedStmt.setString (4, this.getPhoneNumber());
-            preparedStmt.setString (5, this.password);
-            preparedStmt.setDate   (6, this.getSubscriptionDate());
+            preparedStmt.setString(1, usersTable );
+            preparedStmt.setString(2, this.getEmail());
+            preparedStmt.setString(3, this.getLastname());
+            preparedStmt.setString(4, this.getFirstname());
+            preparedStmt.setString(5, this.getPhoneNumber());
+            preparedStmt.setString(6, this.password);
+            preparedStmt.setDate(7, this.getSubscriptionDate());
 
             preparedStmt.execute();
 
@@ -141,6 +150,51 @@ public class User implements Serializable {
         catch (Exception e){
             return false;
         }
+    }
 
+    public User loadUserFromDatabase(String user_email, String user_password){
+        try{
+            String driverName = "oracle.jdbc.driver.OracleDriver";
+            Class.forName(driverName);
+
+            DatabaseConf mydb = DatabaseConf.getInstance();
+
+            String url = mydb.getUrl();
+            String username = mydb.getUsername();
+            String password = mydb.getPassword();
+            String usersTable = mydb.getUsersTable();
+
+            Connection connection = DriverManager.getConnection(url, username, password);
+
+            String insertQuery = "SELECT * FROM ? WHERE user_email = ? AND user_password = ?;";
+
+            PreparedStatement preparedStmt = connection.prepareStatement(insertQuery);
+            preparedStmt.setString (1, usersTable);
+            preparedStmt.setString (2, user_email);
+            preparedStmt.setString (3, user_password);
+
+            ResultSet result = preparedStmt.executeQuery();
+
+            User user = null;
+
+            if(result.first()){
+                user = new User(
+                        result.getInt("user_id"),
+                        result.getString("user_lastname"),
+                        result.getString("user_first_name"),
+                        result.getString("user_phone"),
+                        result.getString("user_email"),
+                        result.getString("user_password"),
+                        result.getDate("user_subscription_date")
+                );
+                return user;
+            }
+            connection.close();
+
+            return user;
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 }
