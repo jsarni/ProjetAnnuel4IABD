@@ -4,6 +4,7 @@
     <string name="message_bienvenue">Bienvenue sur ParkIn</string>
     <string name="subscription_message">Veuillez saisir les informations suivantes pour vous inscrire:</string>
     <string name="password_confirmation_error">"Le mot de pases ne concorde pas"</string>
-    <string name="subscription_failure_message">"Probleme lors de l'inscription, veuillez réessayer plus tard s'il vous plait."</string>
+    <string name="subscription_failure_message_1">"L'adresse email que vous avez saisie existe déjà."</string>
+    <string name="subscription_failure_message_2">"Probleme lors de l'inscription, veuillez réessayer plus tard s'il vous plait."</string>
     <string name="connexion_error_message">"Veuillez vérifier votre Email / Mot de passe"</string>
 </resources>

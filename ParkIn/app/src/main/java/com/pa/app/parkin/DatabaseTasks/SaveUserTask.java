@@ -15,15 +15,15 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
-public class SaveUserTask extends AsyncTask<User, Void, Boolean> {
+public class SaveUserTask extends AsyncTask<User, Void, String> {
 
-    private String subscriptionScript = "http://projetannuel4iabd.yj.fr/insert_test.php";
+    private String subscriptionScript = "http://projetannuel4iabd.yj.fr/user_inscription.php";
 
     @Override
-    protected Boolean doInBackground(User... users) {
-        Boolean insertSuccess = false;
+    protected String doInBackground(User... users) {
+        String insertResult = "2";
         if (users.length != 1) {
-            return false;
+            return "2";
         } else {
 
             User myUser = users[0];
@@ -75,15 +75,11 @@ public class SaveUserTask extends AsyncTask<User, Void, Boolean> {
 
                 JSONObject insert_result_info = result_jArray.getJSONObject(0);
 
-                if (insert_result_info.getString("code").equals("success")){
-                    insertSuccess = true;
-                } else {
-                    insertSuccess = false;
-                }
+                insertResult = insert_result_info.getString("code");
             } catch (Exception ex) {
                 Log.i("log_tag", "Error " + ex.toString());
             } finally {
-                return insertSuccess;
+                return insertResult;
             }
         }
     }

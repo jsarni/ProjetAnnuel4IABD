@@ -13,7 +13,7 @@ public class User implements Serializable {
     private String phoneNumber;
     private String email;
     private String password;
-    private Date subscriptionDate;
+    private String subscriptionDate;
 
     public User(String lastname, String firstname, String phoneNumber, String email, String password) {
         this.lastname = lastname;
@@ -30,7 +30,7 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.password = password;
-        this.subscriptionDate = Date.valueOf(subscriptionDate);
+        this.subscriptionDate = subscriptionDate;
     }
 
     public int getUserId() {
@@ -53,7 +53,7 @@ public class User implements Serializable {
         return email;
     }
 
-    public Date getSubscriptionDate() {
+    public String getSubscriptionDate() {
         return subscriptionDate;
     }
 

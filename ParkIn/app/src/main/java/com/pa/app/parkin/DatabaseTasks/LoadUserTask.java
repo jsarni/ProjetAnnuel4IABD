@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 
 public class LoadUserTask extends AsyncTask<String, Void, User> {
 
-    private String connexionScript = "http://projetannuel4iabd.yj.fr/test_connect.php";
+    private String connexionScript = "http://projetannuel4iabd.yj.fr/user_connection.php";
 
     @Override
     protected User doInBackground(String... strings) {
@@ -94,7 +94,7 @@ public class LoadUserTask extends AsyncTask<String, Void, User> {
                 }
 
             } catch (Exception ex) {
-                Log.i("log_tag", "Error " + ex.toString());
+                Log.i("log_tag", "Error " + ex.getMessage() + ex.toString());
             } finally {
                 return user;
             }

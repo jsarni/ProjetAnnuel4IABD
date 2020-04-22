@@ -49,21 +49,26 @@ public class SubscriptionActivity extends Activity {
 
                     SaveUserTask myLoadTask = new SaveUserTask();
 
-                    boolean subscriptionResult = false;
+                    String subscriptionResult = "2";
                     try {
                         subscriptionResult = myLoadTask.execute(user).get();
                     } catch (Exception e) {
                         Log.e("SubscriptionError", e.getMessage());
                     }
 
-                    if (subscriptionResult){
+                    if (subscriptionResult.equals("0")){
                         Log.i("buttons", "clicked on subscription button");
 
                         Intent successIntent = new Intent(SubscriptionActivity.this, SubscriptionSuccessActivity.class);
                         startActivity(successIntent);
                     } else {
                         Context context = getApplicationContext();
-                        CharSequence errorText = getString(R.string.subscription_failure_message);
+                        CharSequence errorText;
+                        if (subscriptionResult.equals("2")){
+                             errorText = getString(R.string.subscription_failure_message_1);
+                        } else {
+                            errorText = getString(R.string.subscription_failure_message_2);
+                        }
                         int duration = Toast.LENGTH_SHORT;
 
                         Toast toast = Toast.makeText(context, errorText, duration);
