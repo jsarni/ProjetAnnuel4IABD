@@ -1,4 +1,4 @@
-package com.pa.app.parkin;
+package com.pa.app.parkin.Activities;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -10,6 +10,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.pa.app.parkin.R;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 

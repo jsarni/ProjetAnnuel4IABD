@@ -1,4 +1,4 @@
-package com.pa.app.parkin;
+package com.pa.app.parkin.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import com.pa.app.parkin.R;
 
 public class WelcomActivity extends Activity {
 
@@ -16,15 +18,15 @@ public class WelcomActivity extends Activity {
         setContentView(R.layout.welcom_activity);
 
         Button connexionButton = (Button) findViewById(R.id.connexion_button);
-        Button subscriptionButton = (Button) findViewById(R.id.subscription_button);
+        final Button subscriptionButton = (Button) findViewById(R.id.subscription_button);
 
         connexionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("buttons", "clicked on connexion button");
 
-                Intent mapIntent = new Intent(WelcomActivity.this, MapsActivity.class);
-                startActivity(mapIntent);
+                Intent connectionIntent = new Intent(WelcomActivity.this, ConnectionActivity.class);
+                startActivity(connectionIntent);
             }
         });
 
@@ -32,6 +34,9 @@ public class WelcomActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Log.i("buttons", "clicked on subscription button");
+
+                Intent subscriptionIntent = new Intent(WelcomActivity.this, SubscriptionActivity.class);
+                startActivity(subscriptionIntent);
             }
         });
     }
