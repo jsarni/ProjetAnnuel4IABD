@@ -3,6 +3,10 @@ package com.pa.app.parkin.Activities;
 import androidx.fragment.app.FragmentActivity;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,10 +23,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.map_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
+        Button parkingButton = (Button) findViewById(R.id.parking_button);
+        ImageButton profileButton = (ImageButton) findViewById(R.id.profile_button);
+
+        final View searchBox = (View) findViewById(R.id.search_box);
+        final EditText searchAddress = (EditText) findViewById(R.id.search_adress);
+        final Button searchDate = (Button) findViewById(R.id.search_date_button);
+        final Button searchHour = (Button) findViewById(R.id.search_hour_button);
+        final EditText searchPerimeter = (EditText) findViewById(R.id.search_perimeter);
+        final Button searchButton = (Button) findViewById(R.id.search_button);
+
+        searchBox.setVisibility(View.GONE);
+        searchAddress.setVisibility(View.GONE);
+        searchDate.setVisibility(View.GONE);
+        searchHour.setVisibility(View.GONE);
+        searchPerimeter.setVisibility(View.GONE);
+        searchButton.setVisibility(View.GONE);
+
+
+        parkingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showHide(searchBox);
+                showHide(searchAddress);
+                showHide(searchDate);
+                showHide(searchHour);
+                showHide(searchPerimeter);
+                showHide(searchButton);
+            }
+        });
+
         mapFragment.getMapAsync(this);
     }
 
@@ -42,8 +77,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         // Add a marker in Sydney and move the camera
         LatLng paris = new LatLng(48.855964, 2.341282);
-        mMap.setMinZoomPreference(10);
+        mMap.setMinZoomPreference(13);
         mMap.addMarker(new MarkerOptions().position(paris).title("Marker in Paris"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
+    }
+
+    private void showHide(View view){
+        if (view.getVisibility() == View.VISIBLE) {
+            view.setVisibility(View.INVISIBLE);
+        } else {
+            view.setVisibility(View.VISIBLE);
+        }
     }
 }
