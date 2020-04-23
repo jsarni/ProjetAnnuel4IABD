@@ -1,5 +1,6 @@
 package com.pa.app.parkin.Activities;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.DatePickerDialog;
@@ -18,12 +19,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pa.app.parkin.R;
+import com.pa.app.parkin.Utils.DatePickerFragment;
 
 import java.util.Calendar;
+import java.util.Date;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener {
 
     private GoogleMap mMap;
+    private Calendar dateOfSearch;
 
 
     @Override
@@ -37,8 +41,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         final View searchBox = (View) findViewById(R.id.search_box);
         final EditText searchAddress = (EditText) findViewById(R.id.search_adress);
-        final EditText searchDate = (EditText) findViewById(R.id.search_date_edittext);
-        final EditText searchHour = (EditText) findViewById(R.id.search_hour_edittext);
+        final Button searchDate = (Button) findViewById(R.id.search_date_button);
+        final Button searchHour = (Button) findViewById(R.id.search_hour_button);
         final EditText searchPerimeter = (EditText) findViewById(R.id.search_perimeter);
         final Button searchButton = (Button) findViewById(R.id.search_button);
 
@@ -62,6 +66,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 showHide(searchHour);
                 showHide(searchPerimeter);
                 showHide(searchButton);
+            }
+        });
+
+        searchDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment datePicker = new DatePickerFragment();
+                datePicker.show(getSupportFragmentManager(), "date picker");
+//                int selectedYear = dateOfSearch.get(Calendar.YEAR);
+//                int selectedMonth = dateOfSearch.get(Calendar.MONTH);
+//                int selectedDay = dateOfSearch.get(Calendar.DAY_OF_MONTH);
+//                searchDate.setText(selectedDate);
             }
         });
 
@@ -95,5 +111,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } else {
             view.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+        dateOfSearch = Calendar.getInstance();
+        dateOfSearch.set(Calendar.YEAR, year);
+        dateOfSearch.set(Calendar.MONTH, month);
+        dateOfSearch.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+
+        String selectedDate = String.format("%02d/%02d/%d", dayOfMonth ,month, year);
+        Button searchDate = (Button) findViewById(R.id.search_date_button);
+        searchDate.setText(selectedDate);
     }
 }
