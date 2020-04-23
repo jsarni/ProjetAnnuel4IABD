@@ -2,9 +2,12 @@ package com.pa.app.parkin.Activities;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -16,27 +19,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pa.app.parkin.R;
 
+import java.util.Calendar;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_activity);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        Button parkingButton = (Button) findViewById(R.id.parking_button);
-        ImageButton profileButton = (ImageButton) findViewById(R.id.profile_button);
-
         final View searchBox = (View) findViewById(R.id.search_box);
         final EditText searchAddress = (EditText) findViewById(R.id.search_adress);
-        final Button searchDate = (Button) findViewById(R.id.search_date_button);
-        final Button searchHour = (Button) findViewById(R.id.search_hour_button);
+        final EditText searchDate = (EditText) findViewById(R.id.search_date_edittext);
+        final EditText searchHour = (EditText) findViewById(R.id.search_hour_edittext);
         final EditText searchPerimeter = (EditText) findViewById(R.id.search_perimeter);
         final Button searchButton = (Button) findViewById(R.id.search_button);
+
+        final Button parkingButton = (Button) findViewById(R.id.parking_button);
+        final ImageButton profileButton = (ImageButton) findViewById(R.id.profile_button);
 
         searchBox.setVisibility(View.GONE);
         searchAddress.setVisibility(View.GONE);
