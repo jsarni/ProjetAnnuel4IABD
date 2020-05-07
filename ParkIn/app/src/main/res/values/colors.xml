@@ -10,4 +10,7 @@
     <color name="userspaceButtonFill">#D3D3D3</color>
     <color name="userspaceButtonBorder">#696969</color>
     <color name="green">#00FF00</color>
+    <color name="greenPosButtonFill">#90EE90</color>
+    <color name="greenPosButtonBorder">#006400</color>
+    <color name="mapsCircleColor">#6087CEFA</color>
 </resources>
