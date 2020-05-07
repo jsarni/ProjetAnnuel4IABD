@@ -4,13 +4,14 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.DatePickerDialog;
-import android.content.Context;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TimePicker;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,11 +21,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.Utils.DatePickerFragment;
+import com.pa.app.parkin.Utils.TimePickerFragment;
 
 import java.util.Calendar;
-import java.util.Date;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private GoogleMap mMap;
     private Calendar dateOfSearch;
@@ -74,10 +75,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 DialogFragment datePicker = new DatePickerFragment();
                 datePicker.show(getSupportFragmentManager(), "date picker");
-//                int selectedYear = dateOfSearch.get(Calendar.YEAR);
-//                int selectedMonth = dateOfSearch.get(Calendar.MONTH);
-//                int selectedDay = dateOfSearch.get(Calendar.DAY_OF_MONTH);
-//                searchDate.setText(selectedDate);
+//                searchDate.setText(formattedDateToString(dateOfSearch));
+            }
+        });
+
+        searchHour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment timePicker = new TimePickerFragment();
+                timePicker.show(getSupportFragmentManager(), "time picker");
+//                searchHour.setText(formattedHourToString(dateOfSearch));
             }
         });
 
@@ -120,9 +127,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         dateOfSearch.set(Calendar.MONTH, month);
         dateOfSearch.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-
-        String selectedDate = String.format("%02d/%02d/%d", dayOfMonth ,month, year);
         Button searchDate = (Button) findViewById(R.id.search_date_button);
-        searchDate.setText(selectedDate);
+        searchDate.setText(formattedDateToString(dateOfSearch));
+    }
+
+    @Override
+    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute){
+        dateOfSearch.set(Calendar.HOUR_OF_DAY, selectedHour);
+        dateOfSearch.set(Calendar.MINUTE, selectedMinute);
+
+        Button searchHour = (Button) findViewById(R.id.search_hour_button);
+        searchHour.setText(formattedHourToString(dateOfSearch));
+    }
+
+    private String formattedDateToString(Calendar date) {
+        int year = date.get(Calendar.YEAR);
+        int month = date.get(Calendar.MONTH);
+        int day = date.get(Calendar.DAY_OF_MONTH);
+
+
+        return String.format("%02d/%02d/%d", day ,month, year);
+    }
+
+    private String formattedHourToString(Calendar date){
+        int hour = date.get(Calendar.HOUR_OF_DAY);
+        int minute = date.get(Calendar.MINUTE);
+        return String.format("%02d:%02d", hour, minute);
     }
 }
