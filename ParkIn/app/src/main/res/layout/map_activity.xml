@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Activities.MapsActivity" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="ParkIn"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:background="@color/white"
+        />
+
+    <Button
+        android:id="@+id/parking_button"
+        android:layout_width="86dp"
+        android:layout_height="86dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="26dp"
+
+        android:layout_marginBottom="31dp"
+        android:background="@drawable/parking_button"
+        android:text="P"
+        android:textColor="@color/white"
+        android:textSize="50dp" />
+
+    <ImageButton
+        android:id="@+id/position_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="39dp"
+        android:layout_toStartOf="@+id/parking_button"
+        android:layout_toEndOf="@+id/profile_button"
+        android:background="@drawable/get_pos_button"
+        android:scaleType="fitXY"
+        android:padding="10dp"
+        android:src="@drawable/main_position_button" />
+
+    <ImageButton
+        android:id="@+id/profile_button"
+        android:layout_width="86dp"
+        android:layout_height="86dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="26dp"
+        android:layout_marginBottom="31dp"
+        android:background="@drawable/userspace_button"
+        android:scaleType="fitXY"
+        android:src="@drawable/profile_button_image" />
+
+    <View
+    android:id="@+id/search_box"
+    android:layout_width="250dp"
+    android:layout_height="380dp"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentEnd="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginStart="45dp"
+    android:layout_marginTop="176dp"
+    android:layout_marginEnd="45dp"
+    android:layout_marginBottom="150dp"
+    android:background="@drawable/search_box" />
+
+    <EditText
+        android:id="@+id/search_adress"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="465dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:typeface="normal"
+        android:hint="ADRESSE"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/search_date_button"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="400dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:typeface="normal"
+        android:hint="DATE"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/search_hour_button"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="335dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:typeface="normal"
+        android:hint="HEURE" />
+
+    <EditText
+        android:id="@+id/search_perimeter"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="270dp"
+        android:background="@color/white"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:typeface="normal"
+        android:hint="RAYON" />
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="10dp"
+        android:layout_height="35dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="115dp"
+        android:layout_marginEnd="115dp"
+        android:layout_marginBottom="190dp"
+        android:background="@color/green"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="RECHERCHER" />
+
+    <ImageButton
+        android:id="@+id/current_address_button"
+        android:layout_width="40dp"
+        android:layout_height="42dp"
+        android:layout_alignEnd="@+id/search_box"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="464dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/main_position_button_small" />
+
+</RelativeLayout>

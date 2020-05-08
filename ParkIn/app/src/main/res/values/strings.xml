@@ -7,4 +7,8 @@
     <string name="subscription_failure_message_1">"L'adresse email que vous avez saisie existe déjà."</string>
     <string name="subscription_failure_message_2">"Probleme lors de l'inscription, veuillez réessayer plus tard s'il vous plait."</string>
     <string name="connexion_error_message">"Veuillez vérifier votre Email / Mot de passe"</string>
+    <string name="perimeter_error_message">"Erreur de saisie du rayon de la recherche, entrez le rayon que vous souhaitez en metres"</string>
+    <string name="address_error_message">"Erreur de saisie de l'adresse, veuillez la vérifier et réessayer."</string>
+    <string name="location_permission_error_message">"Veuillez autoriser la géolocalisation pour avoir accès à cette fonctionalité."</string>
+    <string name="geolocatisation_search_message">"Position Actuelle"</string>
 </resources>
