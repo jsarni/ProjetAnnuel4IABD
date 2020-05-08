@@ -162,6 +162,6 @@
         android:layout_marginEnd="34dp"
         android:layout_marginBottom="464dp"
         android:scaleType="fitXY"
-        map:srcCompat="@drawable/main_position_button" />
+        android:src="@drawable/main_position_button_small" />
 
 </RelativeLayout>
