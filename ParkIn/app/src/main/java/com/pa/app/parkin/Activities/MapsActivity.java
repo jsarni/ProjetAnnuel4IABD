@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.Image;
@@ -200,6 +201,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     myUtils.showHide(selectCurrentAddressButton);
                     refreshMapWithResearch(searchPoint, perimeter);
                 }
+            }
+        });
+
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.w("debug", "===================================== Click entrée");
+                Intent mapIntent = new Intent(MapsActivity.this, UserActivity.class);
+                Log.w("debug", "===================================== Click intent Créé");
+                startActivity(mapIntent);
             }
         });
 

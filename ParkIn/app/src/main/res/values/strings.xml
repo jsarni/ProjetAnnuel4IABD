@@ -11,4 +11,11 @@
     <string name="address_error_message">"Erreur de saisie de l'adresse, veuillez la vérifier et réessayer."</string>
     <string name="location_permission_error_message">"Veuillez autoriser la géolocalisation pour avoir accès à cette fonctionalité."</string>
     <string name="geolocatisation_search_message">"Position Actuelle"</string>
+    <string name="user_interface_message">"Bienvenue sur votre espace personnel, "</string>
+    <string name="user_general_parameters_button_text">"Paramètres Généraux"</string>
+    <string name="user_connection_parameters_button_text">"Paramètres de Connexion"</string>
+    <string name="user_address_preferences_button_text">"Mes Adresses"</string>
+    <string name="user_general_parameters_activity_message">"Changer vos paramètres généraux"</string>
+    <string name="user_connection_parameters_activity_message">"Changer vos paramètres de connexion"</string>
+
 </resources>

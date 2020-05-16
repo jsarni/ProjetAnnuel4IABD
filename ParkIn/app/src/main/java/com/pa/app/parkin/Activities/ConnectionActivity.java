@@ -18,6 +18,8 @@ import com.pa.app.parkin.User;
 
 public class ConnectionActivity extends Activity {
 
+    public static User appUser = null;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,11 +37,9 @@ public class ConnectionActivity extends Activity {
 
                 LoadUserTask myLoadTask = new LoadUserTask();
 
-                User user = null;
-
                 try {
                     Log.i("Connexion", "launched load Task");
-                    user = myLoadTask.execute(
+                    appUser = myLoadTask.execute(
                             userEmail.getText().toString(),
                             userPassword.getText().toString()
                     ).get();
@@ -50,7 +50,7 @@ public class ConnectionActivity extends Activity {
                 }
 
 
-                if (user == null) {
+                if (appUser == null) {
                     Context context = getApplicationContext();
                     CharSequence errorText = getString(R.string.connexion_error_message);
                     int duration = Toast.LENGTH_SHORT;
@@ -63,5 +63,9 @@ public class ConnectionActivity extends Activity {
                 }
             }
         });
+    }
+
+    public User getAppUser(){
+        return appUser;
     }
 }
