@@ -1,24 +1,24 @@
 package com.pa.app.parkin.Activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.pa.app.parkin.DatabaseTasks.SaveUserTask;
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.User;
+import com.pa.app.parkin.Utils.DevUtils;
 
 
 public class SubscriptionActivity extends Activity {
 
+    DevUtils devUtils = DevUtils.getInstance();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,11 +47,13 @@ public class SubscriptionActivity extends Activity {
                             userPassword.getText().toString()
                     );
 
-                    SaveUserTask myLoadTask = new SaveUserTask();
+                    ConnectionActivity.appUser = user;
+
+                    SaveUserTask mySaveTask = new SaveUserTask();
 
                     String subscriptionResult = "2";
                     try {
-                        subscriptionResult = myLoadTask.execute(user).get();
+                        subscriptionResult = mySaveTask.execute(user).get();
                     } catch (Exception e) {
                         Log.e("SubscriptionError", e.getMessage());
                     }
@@ -62,26 +64,15 @@ public class SubscriptionActivity extends Activity {
                         Intent successIntent = new Intent(SubscriptionActivity.this, SubscriptionSuccessActivity.class);
                         startActivity(successIntent);
                     } else {
-                        Context context = getApplicationContext();
-                        CharSequence errorText;
                         if (subscriptionResult.equals("2")){
-                             errorText = getString(R.string.subscription_failure_message_1);
+                             devUtils.showToast(SubscriptionActivity.this, getString(R.string.subscription_failure_message_1));
                         } else {
-                            errorText = getString(R.string.subscription_failure_message_2);
+                            devUtils.showToast(SubscriptionActivity.this, getString(R.string.subscription_failure_message_2));
                         }
-                        int duration = Toast.LENGTH_SHORT;
-
-                        Toast toast = Toast.makeText(context, errorText, duration);
-                        toast.show();
                     }
 
                 } else {
-                    Context context = getApplicationContext();
-                    CharSequence errorText = getString(R.string.password_confirmation_error);
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, errorText, duration);
-                    toast.show();
+                    devUtils.showToast(SubscriptionActivity.this, getString(R.string.password_confirmation_error));
                 }
             }
         });

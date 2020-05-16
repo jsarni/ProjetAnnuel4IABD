@@ -6,14 +6,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +20,6 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -58,7 +55,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_activity);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
@@ -99,12 +95,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     askForPermissions();
                     if(!gotPermissions()){
-                        Context context = getApplicationContext();
-                        CharSequence errorText = getString(R.string.location_permission_error_message);
-                        int duration = Toast.LENGTH_SHORT;
-
-                        Toast toast = Toast.makeText(context, errorText, duration);
-                        toast.show();
+                        myUtils.showToast(MapsActivity.this, getString(R.string.location_permission_error_message));
                     }
                 }
             }
@@ -139,12 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 } else {
                     askForPermissions();
                     if(!gotPermissions()){
-                        Context context = getApplicationContext();
-                        CharSequence errorText = getString(R.string.location_permission_error_message);
-                        int duration = Toast.LENGTH_SHORT;
-
-                        Toast toast = Toast.makeText(context, errorText, duration);
-                        toast.show();
+                        myUtils.showToast(MapsActivity.this, getString(R.string.location_permission_error_message));
                     }
                 }
                 searchAddress.setText("Position Actuelle");
@@ -180,17 +166,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     searchPoint = myUtils.getLocationFromAddress(context, address);
                 }
                 if (searchPoint == null) {
-                    CharSequence errorText = getString(R.string.address_error_message);
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, errorText, duration);
-                    toast.show();
+                    myUtils.showToast(MapsActivity.this, getString(R.string.address_error_message));
                 } else if (perimeter <= 0) {
-                    CharSequence errorText = getString(R.string.perimeter_error_message);
-                    int duration = Toast.LENGTH_SHORT;
-
-                    Toast toast = Toast.makeText(context, errorText, duration);
-                    toast.show();
+                    myUtils.showToast(MapsActivity.this, getString(R.string.perimeter_error_message));
                 } else {
                     myUtils.showHide(searchBox);
                     myUtils.showHide(searchAddress);
@@ -207,9 +185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w("debug", "===================================== Click entrée");
                 Intent mapIntent = new Intent(MapsActivity.this, UserActivity.class);
-                Log.w("debug", "===================================== Click intent Créé");
                 startActivity(mapIntent);
             }
         });

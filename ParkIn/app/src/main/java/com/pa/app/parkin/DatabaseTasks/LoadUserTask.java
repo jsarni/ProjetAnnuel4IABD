@@ -35,13 +35,11 @@ public class LoadUserTask extends AsyncTask<String, Void, User> {
 
                 BufferedReader reader;
 
-                // Defined URL  where to send data
                 Log.i("Connexion", "URL Createing");
 
                 URL url = new URL(connexionScript);
                 Log.i("Connexion", "URL Created");
 
-                // Send POST data request
 
                 URLConnection conn = url.openConnection();
                 Log.i("Connexion", "Connexion Opened");
@@ -54,14 +52,12 @@ public class LoadUserTask extends AsyncTask<String, Void, User> {
                 wr.flush();
                 Log.i("Connexion", "4");
 
-                // Get the server response
 
                 Log.i("Connexion", "Started reading");
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
                 String line;
 
-                // Read Server Response
                 while ((line = reader.readLine()) != null) {
                     // Append server response in string
                     sb.append(line + "\n");
@@ -72,7 +68,7 @@ public class LoadUserTask extends AsyncTask<String, Void, User> {
                 Log.i("Connexion", "Transforming to json");
                 JSONArray users_jArray = new JSONArray(result);
 
-                Log.i("Connecion", "Length of returned json array" + String.valueOf(users_jArray.length()));
+                Log.i("Connecion", "Length of returned json array" + users_jArray.length());
                 Log.i("Connexion", users_jArray.toString());
 
                 if (users_jArray.length() == 1) {

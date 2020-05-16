@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.User;
 
@@ -51,7 +49,5 @@ public class UserActivity extends Activity {
                 startActivity(mapIntent);
             }
         });
-
-
     }
 }

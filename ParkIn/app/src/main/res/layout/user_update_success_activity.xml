@@ -1,31 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/subscription_success_message"
+        android:id="@+id/user_update_success_message"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:textSize="27sp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Merci, votre inscription a bien été prise en compte"
+        android:text="Vos informations on bien étées mises à jour"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
     <ImageView
-        android:id="@+id/subscription_success_icon"
+        android:id="@+id/user_update_success_icon"
         android:layout_width="254dp"
         android:layout_height="254dp"
         android:layout_gravity="center"
         android:src="@drawable/success_icon_1" />
 
     <Button
-        android:id="@+id/inscription_to_connexion"
+        android:id="@+id/user_update_to_profile_button"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="80dp"
-        android:text="Me connecter" />
+        android:text="Mon Profil" />
 </LinearLayout>

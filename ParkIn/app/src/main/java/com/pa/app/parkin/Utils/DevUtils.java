@@ -1,9 +1,11 @@
 package com.pa.app.parkin.Utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -73,5 +75,13 @@ public class DevUtils {
     public int getZoomLevel(double radius) {
         double scale = radius / 500;
         return (int) (15.5 - Math.log(scale) / Math.log(2));
+    }
+
+    public void showToast(Activity activity, String message){
+        Context context = activity.getApplicationContext();
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.show();
     }
 }

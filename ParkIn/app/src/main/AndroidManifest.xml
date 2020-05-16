@@ -49,6 +49,7 @@
         <activity android:name=".Activities.UserActivity"/>
         <activity android:name=".Activities.UserGeneralParametersActivity"/>
         <activity android:name=".Activities.UserConnectionParametersActivity" />
+        <activity android:name=".Activities.UserUpdateSuccessActivity" />
 
 
     </application>
