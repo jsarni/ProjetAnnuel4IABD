@@ -1,22 +1,24 @@
 package com.pa.app.parkin.Activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.pa.app.parkin.DatabaseTasks.LoadUserTask;
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.User;
+import com.pa.app.parkin.Utils.DevUtils;
 
 public class ConnectionActivity extends Activity {
+
+    public static User appUser = null;
+    DevUtils devUtils = DevUtils.getInstance();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,11 +37,9 @@ public class ConnectionActivity extends Activity {
 
                 LoadUserTask myLoadTask = new LoadUserTask();
 
-                User user = null;
-
                 try {
                     Log.i("Connexion", "launched load Task");
-                    user = myLoadTask.execute(
+                    appUser = myLoadTask.execute(
                             userEmail.getText().toString(),
                             userPassword.getText().toString()
                     ).get();
@@ -50,13 +50,9 @@ public class ConnectionActivity extends Activity {
                 }
 
 
-                if (user == null) {
-                    Context context = getApplicationContext();
-                    CharSequence errorText = getString(R.string.connexion_error_message);
-                    int duration = Toast.LENGTH_SHORT;
+                if (appUser == null) {
+                    devUtils.showToast(ConnectionActivity.this, getString(R.string.connexion_error_message));
 
-                    Toast toast = Toast.makeText(context, errorText, duration);
-                    toast.show();
                 } else {
                     Intent mapIntent = new Intent(ConnectionActivity.this, MapsActivity.class);
                     startActivity(mapIntent);

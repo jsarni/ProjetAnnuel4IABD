@@ -42,21 +42,15 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".Activities.MapsActivity">
-        </activity>
+        <activity android:name=".Activities.MapsActivity"/>
+        <activity android:name=".Activities.SubscriptionActivity"/>
+        <activity android:name=".Activities.SubscriptionSuccessActivity"/>
+        <activity android:name=".Activities.ConnectionActivity"/>
+        <activity android:name=".Activities.UserActivity"/>
+        <activity android:name=".Activities.UserGeneralParametersActivity"/>
+        <activity android:name=".Activities.UserConnectionParametersActivity" />
+        <activity android:name=".Activities.UserUpdateSuccessActivity" />
 
-        <activity
-            android:name=".Activities.SubscriptionActivity">
-        </activity>
-
-        <activity
-            android:name=".Activities.SubscriptionSuccessActivity">
-        </activity>
-
-        <activity
-            android:name=".Activities.ConnectionActivity">
-        </activity>
 
     </application>
 

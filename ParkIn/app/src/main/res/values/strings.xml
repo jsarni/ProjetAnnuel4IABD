@@ -3,7 +3,7 @@
     <string name="title_activity_maps">ParkIn</string>
     <string name="message_bienvenue">Bienvenue sur ParkIn</string>
     <string name="subscription_message">Veuillez saisir les informations suivantes pour vous inscrire:</string>
-    <string name="password_confirmation_error">"Le mot de pases ne concorde pas"</string>
+    <string name="password_confirmation_error">"Le mot de passe ne concorde pas"</string>
     <string name="subscription_failure_message_1">"L'adresse email que vous avez saisie existe déjà."</string>
     <string name="subscription_failure_message_2">"Probleme lors de l'inscription, veuillez réessayer plus tard s'il vous plait."</string>
     <string name="connexion_error_message">"Veuillez vérifier votre Email / Mot de passe"</string>
@@ -11,4 +11,13 @@
     <string name="address_error_message">"Erreur de saisie de l'adresse, veuillez la vérifier et réessayer."</string>
     <string name="location_permission_error_message">"Veuillez autoriser la géolocalisation pour avoir accès à cette fonctionalité."</string>
     <string name="geolocatisation_search_message">"Position Actuelle"</string>
+    <string name="user_interface_message">"Bienvenue sur votre espace personnel, "</string>
+    <string name="user_general_parameters_button_text">"Paramètres Généraux"</string>
+    <string name="user_connection_parameters_button_text">"Paramètres de Connexion"</string>
+    <string name="user_address_preferences_button_text">"Mes Adresses"</string>
+    <string name="user_general_parameters_activity_message">"Changer vos paramètres généraux"</string>
+    <string name="user_connection_parameters_activity_message">"Changer vos paramètres de connexion"</string>
+    <string name="general_parameters_unchange_toast_message">"Aucune information modifiée, veuillez saisir de nouvelles informations."</string>
+    <string name="user_update_error_toast_message">"Une erreur est survenue lors de la mise à jours de vos informations, veuillez réessayer plus tard."</string>
+
 </resources>
