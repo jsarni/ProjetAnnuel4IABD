@@ -1,4 +1,4 @@
-package com.pa.app.parkin.DatabaseTasks;
+package com.pa.app.parkin.DataTasks;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -15,20 +15,20 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
-public class UpdateUserTask extends AsyncTask<User, Void, String> {
+public class SaveUserTask extends AsyncTask<User, Void, String> {
 
-    private String subscriptionScript = "http://projetannuel4iabd.yj.fr/user_update.php";
+    private String subscriptionScript = "http://projetannuel4iabd.yj.fr/user_inscription.php";
 
     @Override
     protected String doInBackground(User... users) {
-        String updateResult = "1";
+        String insertResult = "2";
         if (users.length != 1) {
-            return "1";
+            return "2";
         } else {
+
             User myUser = users[0];
             try {
-                String data = URLEncoder.encode("id", "UTF-8") + "=" + URLEncoder.encode(String.valueOf(myUser.getUserId()), "UTF-8");
-                data += "&" + URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(myUser.getEmail(), "UTF-8");
+                String data = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(myUser.getEmail(), "UTF-8");
                 data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(myUser.getPassword(), "UTF-8");
                 data += "&" + URLEncoder.encode("firstname", "UTF-8") + "=" + URLEncoder.encode(myUser.getFirstname(), "UTF-8");
                 data += "&" + URLEncoder.encode("lastname", "UTF-8") + "=" + URLEncoder.encode(myUser.getLastname(), "UTF-8");
@@ -54,15 +54,16 @@ public class UpdateUserTask extends AsyncTask<User, Void, String> {
                 }
 
                 String result = sb.toString();
+
                 JSONArray result_jArray = new JSONArray(result);
 
                 JSONObject insert_result_info = result_jArray.getJSONObject(0);
 
-                updateResult = insert_result_info.getString("code");
+                insertResult = insert_result_info.getString("code");
             } catch (Exception ex) {
                 Log.i("log_tag", "Error " + ex.toString());
             } finally {
-                return updateResult;
+                return insertResult;
             }
         }
     }
