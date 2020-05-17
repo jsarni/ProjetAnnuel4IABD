@@ -18,7 +18,7 @@ public class UserActivity extends Activity {
         User appUser = ConnectionActivity.appUser;
 
         TextView userInterfaceMessage = (TextView) findViewById(R.id.user_interface_message);
-        userInterfaceMessage.setText(userInterfaceMessage.getText() + appUser.getFirstname());
+        userInterfaceMessage.setText(getString(R.string.user_interface_message,appUser.getFirstname()));
 
         Button generalParametersButton = (Button) findViewById(R.id.user_general_parameters_button);
         Button connectionParametersButton = (Button) findViewById(R.id.user_connection_parameters_button);
