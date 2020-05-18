@@ -11,6 +11,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,9 +29,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.pa.app.parkin.DataTasks.PlaceSearchTask;
 import com.pa.app.parkin.Horodateur;
@@ -44,7 +49,7 @@ import com.pa.app.parkin.Utils.TimePickerFragment;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
 
     private GoogleMap mMap;
     private Calendar dateOfSearch;
@@ -235,9 +240,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int circleColor = getColor(R.color.mapsCircleColor);
         int circleBorderWidth = 2;
         float zoomLevel = myUtils.getZoomLevel(perimeter);
-        mMap.addMarker(new MarkerOptions().position(searchEpicenter).title("Epicentre recherche"));
+
+        mMap.addMarker(
+                new MarkerOptions()
+                        .position(searchEpicenter)
+                        .title("Epicentre recherche")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+        );
+
         addPlaceMarkersToMap(placesMarkers);
-        mMap.addCircle(new CircleOptions().center(searchEpicenter).radius(perimeter).strokeWidth(circleBorderWidth).fillColor(circleColor));
+        mMap.addCircle(
+                new CircleOptions()
+                        .center(searchEpicenter)
+                        .radius(perimeter)
+                        .strokeWidth(circleBorderWidth)
+                        .fillColor(circleColor)
+        );
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(searchEpicenter, zoomLevel));
     }
@@ -245,7 +263,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void refreshMapToCurrentPosition() {
         if (lastKnownLocation != null) {
             LatLng currentLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Position Marker"));
+            mMap.addMarker(
+                    new MarkerOptions()
+                            .position(currentLatLng)
+                            .title("Position Marker")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            );
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
         }
     }
@@ -257,7 +280,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             myMarkers.add(
                     new MarkerOptions()
                             .position(currentPlace.getGeoPoint())
-                            .title(String.valueOf(currentPlace.getNumberOfPlaces()))
+                            .title(currentPlace.getNumberOfPlaces() + " Places")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
             );
         }
 
