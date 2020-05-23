@@ -43,6 +43,7 @@ import com.pa.app.parkin.SearchContext;
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.Utils.DatePickerFragment;
 import com.pa.app.parkin.Utils.DevUtils;
+import com.pa.app.parkin.Utils.GPSTracker;
 import com.pa.app.parkin.Utils.PermissionManager;
 import com.pa.app.parkin.Utils.TimePickerFragment;
 
@@ -130,15 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 if (gotPermissions()) {
-                    locationProvider = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
-
-                    locationProvider.getLastLocation().addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            lastKnownLocation = location;
-                            searchPoint = new LatLng(location.getLatitude(), location.getLongitude());
-                        }
-                    });
+                    updateMyLocation();
                 } else {
                     askForPermissions();
                     if(!gotPermissions()){
@@ -333,6 +326,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(MapsActivity.this,
                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
                     permissionManager.COARSE_AND_FINE_LOCATION_PERMISSION_CODE);
+        }
+    }
+
+    private void updateMyLocation(){
+        GPSTracker gps = new GPSTracker(getApplicationContext());
+
+        if (gps.canGetLocation()){
+            lastKnownLocation = gps.getLocation();
+            searchPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         }
     }
 }
