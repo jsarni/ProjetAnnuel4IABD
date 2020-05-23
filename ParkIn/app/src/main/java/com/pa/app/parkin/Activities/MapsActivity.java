@@ -222,10 +222,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         LatLng paris = new LatLng(48.8534, 2.3488);
+        float zoomLevel = 16;
 
-        mMap.setMinZoomPreference(13);
         mMap.addMarker(new MarkerOptions().position(paris).title("Marker Paris"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, zoomLevel));
     }
 
     private void refreshMapWithResearch(LatLng searchEpicenter, double perimeter, ArrayList<MarkerOptions> placesMarkers) {
