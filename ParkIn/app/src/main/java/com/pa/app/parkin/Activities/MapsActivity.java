@@ -11,6 +11,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -27,19 +29,28 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.pa.app.parkin.DataTasks.PlaceSearchTask;
+import com.pa.app.parkin.Horodateur;
+import com.pa.app.parkin.SearchContext;
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.Utils.DatePickerFragment;
 import com.pa.app.parkin.Utils.DevUtils;
+import com.pa.app.parkin.Utils.GPSTracker;
 import com.pa.app.parkin.Utils.PermissionManager;
 import com.pa.app.parkin.Utils.TimePickerFragment;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
 
     private GoogleMap mMap;
     private Calendar dateOfSearch;
@@ -66,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         final ImageButton selectCurrentAddressButton = (ImageButton) findViewById(R.id.current_address_button);
 
         final Button searchButton = (Button) findViewById(R.id.search_button);
+        final TextView foundPlacesTextview = (TextView) findViewById(R.id.found_places_textview);
 
         final Button parkingButton = (Button) findViewById(R.id.parking_button);
         final ImageButton positionButton = (ImageButton) findViewById(R.id.position_button);
@@ -77,6 +89,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchHour.setVisibility(View.GONE);
         searchPerimeter.setVisibility(View.GONE);
         searchButton.setVisibility(View.GONE);
+        foundPlacesTextview.setVisibility(View.GONE);
         selectCurrentAddressButton.setVisibility(View.GONE);
 
         positionButton.setOnClickListener(new View.OnClickListener() {
@@ -118,15 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 if (gotPermissions()) {
-                    locationProvider = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
-
-                    locationProvider.getLastLocation().addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            lastKnownLocation = location;
-                            searchPoint = new LatLng(location.getLatitude(), location.getLongitude());
-                        }
-                    });
+                    updateMyLocation();
                 } else {
                     askForPermissions();
                     if(!gotPermissions()){
@@ -177,8 +182,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     myUtils.showHide(searchPerimeter);
                     myUtils.showHide(searchButton);
                     myUtils.showHide(selectCurrentAddressButton);
-                    refreshMapWithResearch(searchPoint, perimeter);
+
+                    SearchContext searchContext = new SearchContext(searchPoint, perimeter, dateOfSearch);
+                    PlaceSearchTask searchTask = new PlaceSearchTask();
+
+                    ArrayList<Horodateur> availablePlaces = searchTask.searchPlaces(searchContext);
+
+                    if (availablePlaces == null || availablePlaces.isEmpty()){
+                        myUtils.showToast(MapsActivity.this, getString(R.string.place_search_error));
+                    } else {
+                        int availablePlacesNumber = totalFoundPlacesNumber(availablePlaces);
+                        ArrayList<MarkerOptions> placesMarkers = generatePlacesMarkers(availablePlaces);
+                        if(placesMarkers.isEmpty()){
+                            myUtils.showToast(MapsActivity.this, getString(R.string.place_search_error_display_markers));
+                        } else {
+                            foundPlacesTextview.setText(getString(R.string.number_found_places_text, availablePlacesNumber));
+                            myUtils.showHide(foundPlacesTextview);
+                            refreshMapWithResearch(searchPoint, perimeter, placesMarkers);
+                        }
+                    }
                 }
+
             }
         });
 
@@ -193,34 +217,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         LatLng paris = new LatLng(48.8534, 2.3488);
+        float zoomLevel = 16;
 
-        mMap.setMinZoomPreference(13);
         mMap.addMarker(new MarkerOptions().position(paris).title("Marker Paris"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(paris));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, zoomLevel));
     }
 
-    private void refreshMapWithResearch(LatLng searchEpicenter, double perimeter) {
+    private void refreshMapWithResearch(LatLng searchEpicenter, double perimeter, ArrayList<MarkerOptions> placesMarkers) {
         mMap.clear();
         int circleColor = getColor(R.color.mapsCircleColor);
         int circleBorderWidth = 2;
         float zoomLevel = myUtils.getZoomLevel(perimeter);
-        mMap.addMarker(new MarkerOptions().position(searchEpicenter).title("Epicentre recherche"));
-        mMap.addCircle(new CircleOptions().center(searchEpicenter).radius(perimeter).strokeWidth(circleBorderWidth).fillColor(circleColor));
+
+        mMap.addMarker(
+                new MarkerOptions()
+                        .position(searchEpicenter)
+                        .title("Epicentre recherche")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+        );
+
+        addPlaceMarkersToMap(placesMarkers);
+        mMap.addCircle(
+                new CircleOptions()
+                        .center(searchEpicenter)
+                        .radius(perimeter)
+                        .strokeWidth(circleBorderWidth)
+                        .fillColor(circleColor)
+        );
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(searchEpicenter, zoomLevel));
     }
@@ -228,9 +256,43 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void refreshMapToCurrentPosition() {
         if (lastKnownLocation != null) {
             LatLng currentLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(currentLatLng).title("Position Marker"));
+            mMap.addMarker(
+                    new MarkerOptions()
+                            .position(currentLatLng)
+                            .title("Position Marker")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            );
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
         }
+    }
+
+    private ArrayList<MarkerOptions> generatePlacesMarkers(ArrayList<Horodateur> places){
+        ArrayList<MarkerOptions> myMarkers = new ArrayList<MarkerOptions>();
+        for(int i = 0; i < places.size(); i++){
+            Horodateur currentPlace = places.get(i);
+            myMarkers.add(
+                    new MarkerOptions()
+                            .position(currentPlace.getGeoPoint())
+                            .title(currentPlace.getNumberOfPlaces() + " Places")
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            );
+        }
+
+        return myMarkers;
+    }
+
+    private void addPlaceMarkersToMap(ArrayList<MarkerOptions> markers){
+        for(int i = 0; i < markers.size(); i++){
+            mMap.addMarker(markers.get(i));
+        }
+    }
+
+    private int totalFoundPlacesNumber(ArrayList<Horodateur> places){
+        int total = 0;
+        for (int i = 0; i < places.size(); i++){
+            total += places.get(i).getNumberOfPlaces();
+        }
+        return total;
     }
 
     @Override
@@ -264,6 +326,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             ActivityCompat.requestPermissions(MapsActivity.this,
                     new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
                     permissionManager.COARSE_AND_FINE_LOCATION_PERMISSION_CODE);
+        }
+    }
+
+    private void updateMyLocation(){
+        GPSTracker gps = new GPSTracker(getApplicationContext());
+
+        if (gps.canGetLocation()){
+            lastKnownLocation = gps.getLocation();
+            searchPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
         }
     }
 }

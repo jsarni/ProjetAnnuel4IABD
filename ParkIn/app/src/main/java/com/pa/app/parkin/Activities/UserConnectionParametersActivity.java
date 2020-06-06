@@ -10,7 +10,7 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 
-import com.pa.app.parkin.DatabaseTasks.UpdateUserTask;
+import com.pa.app.parkin.DataTasks.UpdateUserTask;
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.Utils.DevUtils;
 
