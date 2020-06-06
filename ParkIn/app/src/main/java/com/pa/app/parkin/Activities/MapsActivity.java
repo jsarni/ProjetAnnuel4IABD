@@ -6,13 +6,15 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -23,8 +25,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,25 +32,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.pa.app.parkin.DataTasks.PlaceSearchTask;
 import com.pa.app.parkin.Horodateur;
 import com.pa.app.parkin.SearchContext;
 import com.pa.app.parkin.R;
 import com.pa.app.parkin.Utils.DatePickerFragment;
 import com.pa.app.parkin.Utils.DevUtils;
-import com.pa.app.parkin.Utils.GPSTracker;
 import com.pa.app.parkin.Utils.PermissionManager;
 import com.pa.app.parkin.Utils.TimePickerFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, LocationListener {
 
     private GoogleMap mMap;
     private Calendar dateOfSearch;
@@ -59,7 +54,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private DevUtils myUtils = DevUtils.getInstance();
     private Location lastKnownLocation;
-    private FusedLocationProviderClient locationProvider;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,18 +91,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 if (gotPermissions()) {
-                    locationProvider = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
-
-                    locationProvider.getLastLocation().addOnSuccessListener(MapsActivity.this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            lastKnownLocation = location;
-                        }
-                    });
-                    refreshMapToCurrentPosition();
+                    if (updateCurrentPosition()){
+                        refreshMapToCurrentPosition();
+                    } else {
+                        myUtils.showToast(MapsActivity.this, getString(R.string.location_refresh_error));
+                    }
                 } else {
                     askForPermissions();
-                    if(!gotPermissions()){
+                    if (!gotPermissions()) {
                         myUtils.showToast(MapsActivity.this, getString(R.string.location_permission_error_message));
                     }
                 }
@@ -131,10 +122,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 if (gotPermissions()) {
-                    updateMyLocation();
+                    if (updateCurrentPosition()) {
+                        updateSearchPointLocalisation();
+                    } else {
+                        myUtils.showToast(MapsActivity.this, getString(R.string.location_refresh_error));
+                    }
                 } else {
                     askForPermissions();
-                    if(!gotPermissions()){
+                    if (!gotPermissions()) {
                         myUtils.showToast(MapsActivity.this, getString(R.string.location_permission_error_message));
                     }
                 }
@@ -188,12 +183,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     ArrayList<Horodateur> availablePlaces = searchTask.searchPlaces(searchContext);
 
-                    if (availablePlaces == null || availablePlaces.isEmpty()){
+                    if (availablePlaces == null || availablePlaces.isEmpty()) {
                         myUtils.showToast(MapsActivity.this, getString(R.string.place_search_error));
                     } else {
                         int availablePlacesNumber = totalFoundPlacesNumber(availablePlaces);
                         ArrayList<MarkerOptions> placesMarkers = generatePlacesMarkers(availablePlaces);
-                        if(placesMarkers.isEmpty()){
+                        if (placesMarkers.isEmpty()) {
                             myUtils.showToast(MapsActivity.this, getString(R.string.place_search_error_display_markers));
                         } else {
                             foundPlacesTextview.setText(getString(R.string.number_found_places_text, availablePlacesNumber));
@@ -226,6 +221,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.addMarker(new MarkerOptions().position(paris).title("Marker Paris"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, zoomLevel));
+    }
+
+    @SuppressLint("MissingPermission")
+    public boolean updateCurrentPosition() {
+        locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
+
+        if (locationManager != null) {
+            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
+            lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        lastKnownLocation = location;
     }
 
     private void refreshMapWithResearch(LatLng searchEpicenter, double perimeter, ArrayList<MarkerOptions> placesMarkers) {
@@ -329,12 +342,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void updateMyLocation(){
-        GPSTracker gps = new GPSTracker(getApplicationContext());
+    private void updateSearchPointLocalisation(){
+        searchPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+    }
 
-        if (gps.canGetLocation()){
-            lastKnownLocation = gps.getLocation();
-            searchPoint = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-        }
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
     }
 }

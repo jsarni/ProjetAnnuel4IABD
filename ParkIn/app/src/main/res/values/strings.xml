@@ -23,5 +23,6 @@
     <string name="place_search_error">"Une erreur est survenue lors de votre recherche, veuillez réessayer s'il vous plait."</string>
     <string name="place_search_error_display_markers">"Une erreur est survenue lors de votre recherche, veuillez réessayer s'il vous plait."</string>
     <string name="number_found_places_text">"  Places disponibles : %1$d  "</string>
+    <string name="location_refresh_error">"Impossible de vous géolocaliser, veuillez vérifier votre connexion internet ou que votre GPS est activé"</string>
 
 </resources>
