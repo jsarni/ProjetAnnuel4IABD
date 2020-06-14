@@ -225,7 +225,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     myUtils.showHide(parkingButton);
                                     myUtils.showHide(positionButton);
                                     myUtils.showHide(profileButton);
-                                    return false;
+
+                                    String nb_found_places = marker.getTitle();
+
+                                    foundPlacesForMarkerTextview.setText(getString(R.string.number_found_places_for_marker_text, nb_found_places));
+                                    return true;
                                 }
                             });
                         }
@@ -255,15 +259,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.addMarker(new MarkerOptions().position(paris).title("Marker Paris"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, zoomLevel));
-//
-//        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-//            @Override
-//            public boolean onMarkerClick(Marker marker) {
-//                myUtils.showHide(foundPlacesForMarkerTextview);
-//                myUtils.showHide(selectPlacesMarkerButton);
-//                return false;
-//            }
-//        });
     }
 
     @SuppressLint("MissingPermission")
@@ -326,7 +321,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .fillColor(circleColor)
         );
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(searchEpicenter, zoomLevel));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(searchEpicenter, zoomLevel));
     }
 
     private void refreshMapToCurrentPosition() {
