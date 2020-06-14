@@ -32,6 +32,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.pa.app.parkin.DataTasks.PlaceSearchTask;
 import com.pa.app.parkin.Horodateur;
@@ -44,6 +45,7 @@ import com.pa.app.parkin.Utils.TimePickerFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, LocationListener {
 
@@ -56,6 +58,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location lastKnownLocation;
     private LocationManager locationManager;
 
+    private View searchBox;
+    private EditText searchAddress;
+    private Button searchDate;
+    private Button searchHour;
+    private EditText searchPerimeter;
+    private ImageButton selectCurrentAddressButton;
+
+    private Button searchButton;
+    private TextView foundPlacesTextview;
+
+    private Button parkingButton;
+    private ImageButton positionButton;
+    private ImageButton profileButton;
+
+    private TextView foundPlacesForMarkerTextview;
+    private Button selectPlacesMarkerButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -64,19 +83,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
 
-        final View searchBox = (View) findViewById(R.id.search_box);
-        final EditText searchAddress = (EditText) findViewById(R.id.search_adress);
-        final Button searchDate = (Button) findViewById(R.id.search_date_button);
-        final Button searchHour = (Button) findViewById(R.id.search_hour_button);
-        final EditText searchPerimeter = (EditText) findViewById(R.id.search_perimeter);
-        final ImageButton selectCurrentAddressButton = (ImageButton) findViewById(R.id.current_address_button);
-
-        final Button searchButton = (Button) findViewById(R.id.search_button);
-        final TextView foundPlacesTextview = (TextView) findViewById(R.id.found_places_textview);
-
-        final Button parkingButton = (Button) findViewById(R.id.parking_button);
-        final ImageButton positionButton = (ImageButton) findViewById(R.id.position_button);
-        final ImageButton profileButton = (ImageButton) findViewById(R.id.profile_button);
+        searchBox = (View) findViewById(R.id.search_box);
+        searchAddress = (EditText) findViewById(R.id.search_adress);
+        searchDate = (Button) findViewById(R.id.search_date_button);
+        searchHour = (Button) findViewById(R.id.search_hour_button);
+        searchPerimeter = (EditText) findViewById(R.id.search_perimeter);
+        selectCurrentAddressButton = (ImageButton) findViewById(R.id.current_address_button);
+        searchButton = (Button) findViewById(R.id.search_button);
+        foundPlacesTextview = (TextView) findViewById(R.id.found_places_textview);
+        parkingButton = (Button) findViewById(R.id.parking_button);
+        positionButton = (ImageButton) findViewById(R.id.position_button);
+        profileButton = (ImageButton) findViewById(R.id.profile_button);
+        foundPlacesForMarkerTextview = (TextView) findViewById(R.id.found_places_for_marker);
+        selectPlacesMarkerButton = (Button) findViewById(R.id.select_horodateur_button);
 
         searchBox.setVisibility(View.GONE);
         searchAddress.setVisibility(View.GONE);
@@ -86,6 +105,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchButton.setVisibility(View.GONE);
         foundPlacesTextview.setVisibility(View.GONE);
         selectCurrentAddressButton.setVisibility(View.GONE);
+        foundPlacesForMarkerTextview.setVisibility(View.GONE);
+        selectPlacesMarkerButton.setVisibility(View.GONE);
 
         positionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -194,6 +215,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             foundPlacesTextview.setText(getString(R.string.number_found_places_text, availablePlacesNumber));
                             myUtils.showHide(foundPlacesTextview);
                             refreshMapWithResearch(searchPoint, perimeter, placesMarkers);
+
+                            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                                @Override
+                                public boolean onMarkerClick(Marker marker) {
+                                    myUtils.showHide(foundPlacesForMarkerTextview);
+                                    myUtils.showHide(selectPlacesMarkerButton);
+                                    myUtils.showHide(foundPlacesTextview);
+                                    myUtils.showHide(parkingButton);
+                                    myUtils.showHide(positionButton);
+                                    myUtils.showHide(profileButton);
+                                    return false;
+                                }
+                            });
                         }
                     }
                 }
@@ -221,6 +255,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.addMarker(new MarkerOptions().position(paris).title("Marker Paris"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, zoomLevel));
+//
+//        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+//            @Override
+//            public boolean onMarkerClick(Marker marker) {
+//                myUtils.showHide(foundPlacesForMarkerTextview);
+//                myUtils.showHide(selectPlacesMarkerButton);
+//                return false;
+//            }
+//        });
     }
 
     @SuppressLint("MissingPermission")
@@ -228,10 +271,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
 
         if (locationManager != null) {
-            locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
-            lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            return true;
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
+
+                List<String> providers = locationManager.getProviders(true);
+
+                for (String provider : providers) {
+                    Location l = locationManager.getLastKnownLocation(provider);
+                    if (l == null) {
+                        continue;
+                    }
+                    if (lastKnownLocation == null || l.getAccuracy() < lastKnownLocation.getAccuracy()) {
+                        lastKnownLocation = l;
+                    }
+                }
+                if(lastKnownLocation == null) {
+                    Log.w("DEBUG", "LastKnownLocation is null");
+                }
+                return true;
+            } else {
+                myUtils.showToast(MapsActivity.this,  getString(R.string.location_refresh_error));
+                return false;
+            }
         } else {
+            myUtils.showToast(MapsActivity.this,  "Un problème est survenu lors de la localisation");
             return false;
         }
     }
