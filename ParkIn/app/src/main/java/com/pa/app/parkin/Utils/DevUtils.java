@@ -100,4 +100,8 @@ public class DevUtils {
     public LatLng getMiddleLatLng(LatLng pointA, LatLng pointB) {
         return new LatLng((pointA.latitude + pointB.latitude) /2, (pointA.longitude + pointB.longitude) /2);
     }
+
+    public LatLng latLngFromLocation(Location location){
+        return new LatLng(location.getLatitude(), location.getLongitude());
+    }
 }
