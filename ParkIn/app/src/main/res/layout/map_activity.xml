@@ -34,6 +34,7 @@
         android:textColor="@color/white"
         android:textSize="50dp" />
 
+
     <ImageButton
         android:id="@+id/position_button"
         android:layout_width="60dp"
@@ -60,6 +61,18 @@
         android:background="@drawable/userspace_button"
         android:scaleType="fitXY"
         android:src="@drawable/profile_button_image" />
+
+    <ImageButton
+        android:id="@+id/go_back_button"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/rollback_button"
+        android:scaleType="fitXY"
+        android:src="@drawable/go_back_icon" />
 
     <View
     android:id="@+id/search_box"
@@ -156,13 +169,13 @@
     <Button
         android:id="@+id/select_horodateur_button"
         android:layout_width="10dp"
-        android:layout_height="55dp"
+        android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="70dp"
         android:layout_marginEnd="70dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="90dp"
         android:background="@color/parkingButtonFill"
         android:gravity="center"
         android:text="Choisir cet emplacement "

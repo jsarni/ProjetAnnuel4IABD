@@ -77,6 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private DevUtils myUtils = DevUtils.getInstance();
     private Location lastKnownLocation;
     private Marker lastKnownPositionMarker;
+    private Marker selectedPlacesMarker;
     private LocationManager locationManager;
     private Polyline route;
 
@@ -96,11 +97,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private TextView foundPlacesForMarkerTextview;
     private Button selectPlacesMarkerButton;
+    private ImageButton rollBackToMainInterfaceButton;
 
-    private static final long INTERVAL = 1000 * 10;
-    private static final long FASTEST_INTERVAL = 1000 * 5;
-    private LocationRequest mLocationRequest;
-    private String mLastUpdateTime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -122,6 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         profileButton = (ImageButton) findViewById(R.id.profile_button);
         foundPlacesForMarkerTextview = (TextView) findViewById(R.id.found_places_for_marker);
         selectPlacesMarkerButton = (Button) findViewById(R.id.select_horodateur_button);
+        rollBackToMainInterfaceButton = (ImageButton) findViewById(R.id.go_back_button);
 
         searchBox.setVisibility(View.GONE);
         searchAddress.setVisibility(View.GONE);
@@ -133,6 +132,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectCurrentAddressButton.setVisibility(View.GONE);
         foundPlacesForMarkerTextview.setVisibility(View.GONE);
         selectPlacesMarkerButton.setVisibility(View.GONE);
+        rollBackToMainInterfaceButton.setVisibility(View.GONE);
 
         positionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,32 +245,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(final Marker marker) {
-                                    myUtils.showHide(foundPlacesForMarkerTextview);
-                                    myUtils.showHide(selectPlacesMarkerButton);
-                                    myUtils.showHide(foundPlacesTextview);
-                                    myUtils.showHide(parkingButton);
-                                    myUtils.showHide(positionButton);
-                                    myUtils.showHide(profileButton);
+                                    selectedPlacesMarker = marker;
+
+                                    foundPlacesForMarkerTextview.setVisibility(View.VISIBLE);
+                                    selectPlacesMarkerButton.setVisibility(View.VISIBLE);
+                                    rollBackToMainInterfaceButton.setVisibility(View.VISIBLE);
+                                    foundPlacesTextview.setVisibility(View.GONE);
+                                    parkingButton.setVisibility(View.GONE);
+                                    positionButton.setVisibility(View.GONE);
+                                    profileButton.setVisibility(View.GONE);
 
                                     String nb_found_places = marker.getTitle();
 
                                     foundPlacesForMarkerTextview.setText(getString(R.string.number_found_places_for_marker_text, nb_found_places));
                                     mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-                                    selectPlacesMarkerButton.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            drawRouteToPlace(marker.getPosition());
-                                            LatLng lastKnownPositionLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                                            LatLng middlePoint = myUtils.getMiddleLatLng(
-                                                    lastKnownPositionLatLng,
-                                                    marker.getPosition());
-                                            double distance = myUtils.getDistanceInMeter(lastKnownPositionLatLng, marker.getPosition());
-                                            float zoomLevel = myUtils.getZoomLevel(distance / 2);
-                                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(middlePoint, zoomLevel));
-                                            myUtils.showHide(selectPlacesMarkerButton);
-                                        }
-                                    });
+
+
                                     return true;
                                 }
                             });
@@ -278,6 +269,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 }
 
+            }
+
+        });
+        selectPlacesMarkerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawRouteToPlace(selectedPlacesMarker.getPosition());
+                LatLng lastKnownPositionLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                LatLng middlePoint = myUtils.getMiddleLatLng(
+                        lastKnownPositionLatLng,
+                        selectedPlacesMarker.getPosition());
+                double distance = myUtils.getDistanceInMeter(lastKnownPositionLatLng, selectedPlacesMarker.getPosition());
+                float zoomLevel = myUtils.getZoomLevel(distance / 2);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(middlePoint, zoomLevel));
+                myUtils.showHide(selectPlacesMarkerButton);
+            }
+        });
+
+        rollBackToMainInterfaceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myUtils.showHide(rollBackToMainInterfaceButton);
+                mMap.clear();
+
+                foundPlacesForMarkerTextview.setVisibility(View.GONE);
+                selectPlacesMarkerButton.setVisibility(View.GONE);
+                rollBackToMainInterfaceButton.setVisibility(View.GONE);
+
+                parkingButton.setVisibility(View.VISIBLE);
+                profileButton.setVisibility(View.VISIBLE);
+                positionButton.setVisibility(View.VISIBLE);
+
+                refreshMapToCurrentPosition();
             }
         });
 
@@ -348,7 +372,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onLocationChanged(Location location) {
 
         lastKnownLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance() .format(new Date());
         if (lastKnownPositionMarker != null) {
             lastKnownPositionMarker.remove();
         }
@@ -394,7 +417,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .title("Position Marker")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             );
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16));
         }
     }
 
@@ -571,7 +594,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (locationManager != null) {
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL, 0, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
                 List<String> providers = locationManager.getProviders(true);
 
