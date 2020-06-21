@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.view.View;
 import android.widget.Toast;
 
@@ -83,5 +85,19 @@ public class DevUtils {
 
         Toast toast = Toast.makeText(context, message, duration);
         toast.show();
+    }
+
+    public double getDistanceInMeter(LatLng pointA, LatLng pointB) {
+        Location sourceLoc = new Location(LocationManager.GPS_PROVIDER);
+        sourceLoc.setLatitude(pointA.latitude);
+        sourceLoc.setLongitude(pointA.longitude);
+        Location destLoc = new Location(LocationManager.GPS_PROVIDER);
+        destLoc.setLatitude(pointB.latitude);
+        destLoc.setLongitude(pointB.longitude);
+        return sourceLoc.distanceTo(destLoc);
+    }
+
+    public LatLng getMiddleLatLng(LatLng pointA, LatLng pointB) {
+        return new LatLng((pointA.latitude + pointB.latitude) /2, (pointA.longitude + pointB.longitude) /2);
     }
 }

@@ -12,6 +12,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -34,6 +35,16 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsStep;
+import com.google.maps.model.EncodedPolyline;
 import com.pa.app.parkin.DataTasks.PlaceSearchTask;
 import com.pa.app.parkin.Horodateur;
 import com.pa.app.parkin.SearchContext;
@@ -57,6 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private DevUtils myUtils = DevUtils.getInstance();
     private Location lastKnownLocation;
     private LocationManager locationManager;
+    private Polyline route;
 
     private View searchBox;
     private EditText searchAddress;
@@ -218,7 +230,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
-                                public boolean onMarkerClick(Marker marker) {
+                                public boolean onMarkerClick(final Marker marker) {
                                     myUtils.showHide(foundPlacesForMarkerTextview);
                                     myUtils.showHide(selectPlacesMarkerButton);
                                     myUtils.showHide(foundPlacesTextview);
@@ -229,6 +241,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     String nb_found_places = marker.getTitle();
 
                                     foundPlacesForMarkerTextview.setText(getString(R.string.number_found_places_for_marker_text, nb_found_places));
+                                    mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+
+                                    selectPlacesMarkerButton.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            drawRouteToPlace(marker.getPosition());
+                                            LatLng lastKnownPositionLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                                            LatLng middlePoint = myUtils.getMiddleLatLng(
+                                                    lastKnownPositionLatLng,
+                                                    marker.getPosition());
+                                            double distance = myUtils.getDistanceInMeter(lastKnownPositionLatLng, marker.getPosition());
+                                            float zoomLevel = myUtils.getZoomLevel(distance / 2);
+                                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(middlePoint, zoomLevel));
+                                            myUtils.showHide(selectPlacesMarkerButton);
+                                        }
+                                    });
                                     return true;
                                 }
                             });
@@ -364,6 +392,79 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             total += places.get(i).getNumberOfPlaces();
         }
         return total;
+    }
+
+    private void prepareMapForRoute() {
+        if (route != null) {
+            route.remove();
+        }
+    }
+    private void drawRouteToPlace(LatLng placePosition){
+        prepareMapForRoute();
+
+        GeoApiContext geoContext = new GeoApiContext.Builder()
+                .apiKey("AIzaSyBGH9V1SEo7G6ppxzmoIbTBT31gW059Iqo")
+                .build();
+        ArrayList path = new ArrayList();
+
+        String origin = String.format(
+                "%s,%s",
+                String.valueOf(lastKnownLocation.getLatitude()).replace(',', '.'),
+                String.valueOf(lastKnownLocation.getLongitude()).replace(',', '.')
+        );
+        String destination = String.format(
+                "%s,%s",
+                String.valueOf(placePosition.latitude).replace(',', '.'),
+                String.valueOf(placePosition.longitude).replace(',', '.')
+        );
+
+        DirectionsApiRequest request = DirectionsApi.getDirections(geoContext, origin, destination);
+        try {
+            DirectionsResult result = request.await();
+
+            if (result.routes != null && result.routes.length > 0) {
+                DirectionsRoute route = result.routes[0];
+
+                if (route.legs !=null) {
+                    for(int i=0; i<route.legs.length; i++) {
+                        DirectionsLeg leg = route.legs[i];
+                        if (leg.steps != null) {
+                            for (int j=0; j<leg.steps.length;j++){
+                                DirectionsStep step = leg.steps[j];
+                                if (step.steps != null && step.steps.length >0) {
+                                    for (int k=0; k<step.steps.length;k++){
+                                        DirectionsStep step1 = step.steps[k];
+                                        EncodedPolyline points1 = step1.polyline;
+                                        if (points1 != null) {
+                                            List<com.google.maps.model.LatLng> coords1 = points1.decodePath();
+                                            for (com.google.maps.model.LatLng coord1 : coords1) {
+                                                path.add(new LatLng(coord1.lat, coord1.lng));
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    EncodedPolyline points = step.polyline;
+                                    if (points != null) {
+                                        List<com.google.maps.model.LatLng> coords = points.decodePath();
+                                        for (com.google.maps.model.LatLng coord : coords) {
+                                            path.add(new LatLng(coord.lat, coord.lng));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch(Exception ex) {
+            Log.e("ROUTE ERROR", ex.getMessage());
+            myUtils.showToast(MapsActivity.this, "Problème lors du calcul de l'itinéraire");
+        }
+
+        if (path.size() > 0) {
+            PolylineOptions opts = new PolylineOptions().addAll(path).color(Color.BLUE).width(5);
+            route = mMap.addPolyline(opts);
+        }
     }
 
     @Override
