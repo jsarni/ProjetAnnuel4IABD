@@ -320,11 +320,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        LatLng paris = new LatLng(48.8534, 2.3488);
-        float zoomLevel = 16;
+        float zoomLevel = 17;
 
-        mMap.addMarker(new MarkerOptions().position(paris).title("Marker Paris"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(paris, zoomLevel));
+        refreshMapToCurrentPosition();
+        LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, zoomLevel));
     }
 
     @SuppressLint("MissingPermission")
@@ -411,13 +411,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private void refreshMapToCurrentPosition() {
         if (lastKnownLocation != null) {
             LatLng currentLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-            mMap.addMarker(
+            if (lastKnownPositionMarker != null) {
+                lastKnownPositionMarker.remove();
+            }
+            lastKnownPositionMarker = mMap.addMarker(
                     new MarkerOptions()
                             .position(currentLatLng)
                             .title("Position Marker")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             );
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
         }
     }
 
