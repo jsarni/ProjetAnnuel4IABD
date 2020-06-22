@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -102,9 +103,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView foundPlacesForMarkerTextview;
     private Button selectPlacesMarkerButton;
     private ImageButton rollBackToMainInterfaceButton;
+
+    private View feedbackView;
+    private TextView feedbackMessageTextView;
+    private Button feedbackFoundPlaceButton;
+    private Button feedbackNotFoundPlaceButton;
+    private ImageView feedbackFoundImage;
+
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationClient;
+    private boolean foundAPlace = false;
+    private boolean askingForFeedback = false;
 
     private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 10000;
 
@@ -131,6 +141,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectPlacesMarkerButton = (Button) findViewById(R.id.select_horodateur_button);
         rollBackToMainInterfaceButton = (ImageButton) findViewById(R.id.go_back_button);
 
+        feedbackView = (View) findViewById(R.id.feedback_view);
+        feedbackMessageTextView = (TextView) findViewById(R.id.feedback_question);
+        feedbackFoundPlaceButton = (Button) findViewById(R.id.found_place_button);
+        feedbackNotFoundPlaceButton = (Button) findViewById(R.id.not_found_place_button);
+        feedbackFoundImage = (ImageView) findViewById(R.id.found_places_image);
+
         searchBox.setVisibility(View.GONE);
         searchAddress.setVisibility(View.GONE);
         searchDate.setVisibility(View.GONE);
@@ -142,6 +158,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         foundPlacesForMarkerTextview.setVisibility(View.GONE);
         selectPlacesMarkerButton.setVisibility(View.GONE);
         rollBackToMainInterfaceButton.setVisibility(View.GONE);
+        feedbackView.setVisibility(View.GONE);
+        feedbackMessageTextView.setVisibility(View.GONE);
+        feedbackFoundPlaceButton.setVisibility(View.GONE);
+        feedbackNotFoundPlaceButton.setVisibility(View.GONE);
+        feedbackFoundImage.setVisibility(View.GONE);
 
         positionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -305,6 +326,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 foundPlacesForMarkerTextview.setVisibility(View.GONE);
                 selectPlacesMarkerButton.setVisibility(View.GONE);
                 rollBackToMainInterfaceButton.setVisibility(View.GONE);
+                feedbackView.setVisibility(View.GONE);
+                feedbackMessageTextView.setVisibility(View.GONE);
+                feedbackFoundPlaceButton.setVisibility(View.GONE);
+                feedbackNotFoundPlaceButton.setVisibility(View.GONE);
+                feedbackFoundImage.setVisibility(View.GONE);
 
                 parkingButton.setVisibility(View.VISIBLE);
                 profileButton.setVisibility(View.VISIBLE);
@@ -418,6 +444,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         LatLng placePosition = selectedPlacesMarker.getPosition();
                         if (myUtils.getDistanceInMeter(myPosition, placePosition) < MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION) {
                             Log.e("Location ----------", "Marche" + myUtils.getDistanceInMeter(myPosition, placePosition));
+                            if(!foundAPlace && !askingForFeedback) {
+                                manageFeedback();
+                                askingForFeedback = true;
+                            }
                         }
                     }
                     Log.e("LOCATIONRES --", String.format("%f,%f",location.getLatitude(), location.getLongitude()));
@@ -425,6 +455,50 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         };
+    }
+
+    private void manageFeedback(){
+
+//        foundPlacesForMarkerTextview.setVisibility(View.GONE);
+//        selectPlacesMarkerButton.setVisibility(View.GONE);
+//        feedbackView.setVisibility(View.VISIBLE);
+//        feedbackMessageTextView.setVisibility(View.VISIBLE);
+//        feedbackFoundPlaceButton.setVisibility(View.VISIBLE);
+//        feedbackNotFoundPlaceButton.setVisibility(View.VISIBLE);
+
+        myUtils.showHide(foundPlacesForMarkerTextview);
+        myUtils.showHide(selectPlacesMarkerButton);
+        myUtils.showHide(feedbackView);
+        myUtils.showHide(feedbackMessageTextView);
+        myUtils.showHide(feedbackFoundPlaceButton);
+        myUtils.showHide(feedbackNotFoundPlaceButton);
+
+        feedbackNotFoundPlaceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                askingForFeedback = false;
+                foundAPlace = false;
+                myUtils.showHide(foundPlacesForMarkerTextview);
+                myUtils.showHide(selectPlacesMarkerButton);
+                myUtils.showHide(feedbackView);
+                myUtils.showHide(feedbackMessageTextView);
+                myUtils.showHide(feedbackFoundPlaceButton);
+                myUtils.showHide(feedbackNotFoundPlaceButton);
+            }
+        });
+
+        feedbackFoundPlaceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                foundAPlace = true;
+                myUtils.showHide(feedbackView);
+                myUtils.showHide(feedbackMessageTextView);
+                myUtils.showHide(feedbackFoundPlaceButton);
+                myUtils.showHide(feedbackNotFoundPlaceButton);
+                myUtils.showHide(feedbackFoundImage);
+
+            }
+        });
     }
 
     private void startLocationUpdates() {

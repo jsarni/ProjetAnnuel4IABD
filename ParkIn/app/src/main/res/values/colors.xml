@@ -14,4 +14,5 @@
     <color name="greenPosButtonBorder">#006400</color>
     <color name="mapsCircleColor">#6087CEFA</color>
     <color name="black">#000000</color>
+    <color name="red">#DD0000</color>
 </resources>
