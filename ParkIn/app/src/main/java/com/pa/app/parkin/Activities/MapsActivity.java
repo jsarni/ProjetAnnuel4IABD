@@ -17,6 +17,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,7 +32,10 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -98,6 +102,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private TextView foundPlacesForMarkerTextview;
     private Button selectPlacesMarkerButton;
     private ImageButton rollBackToMainInterfaceButton;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -322,9 +331,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         float zoomLevel = 17;
 
-        refreshMapToCurrentPosition();
+        createLocationRequest();
+        createLocationUpdatesCallback();
+        createFusedLocationClient();
+
+        updateCurrentPosition();
         LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, zoomLevel));
+
+        startLocationUpdates();
     }
 
     @SuppressLint("MissingPermission")
@@ -368,19 +383,77 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void createLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(500);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void createFusedLocationClient(){
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
+    }
+
+    private void createLocationUpdatesCallback(){
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    lastKnownLocation = location;
+                    if (lastKnownPositionMarker != null) {
+                        lastKnownPositionMarker.remove();
+                    }
+                    lastKnownPositionMarker = mMap.addMarker(
+                            new MarkerOptions()
+                                    .position(myUtils.latLngFromLocation(lastKnownLocation))
+                                    .title("Position actuelle")
+                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                    );
+
+                    if (lastKnownLocation != null && selectedPlacesMarker != null) {
+                        LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
+                        LatLng placePosition = selectedPlacesMarker.getPosition();
+                        if (myUtils.getDistanceInMeter(myPosition, placePosition) < MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION) {
+                            Log.e("Location ----------", "Marche" + myUtils.getDistanceInMeter(myPosition, placePosition));
+                        }
+                    }
+                    Log.e("LOCATIONRES --", String.format("%f,%f",location.getLatitude(), location.getLongitude()));
+                    Log.e("LOCATIONRES --", String.format("%f,%f",location.getLatitude(), location.getLongitude()));
+                }
+            }
+        };
+    }
+
+    private void startLocationUpdates() {
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+                locationCallback,
+                Looper.getMainLooper());
+    }
     @Override
     public void onLocationChanged(Location location) {
 
-        lastKnownLocation = location;
-        if (lastKnownPositionMarker != null) {
-            lastKnownPositionMarker.remove();
-        }
-        lastKnownPositionMarker = mMap.addMarker(
-                new MarkerOptions()
-                        .position(myUtils.latLngFromLocation(lastKnownLocation))
-                        .title("Position actuelle")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-        );
+//        lastKnownLocation = location;
+//        if (lastKnownPositionMarker != null) {
+//            lastKnownPositionMarker.remove();
+//        }
+//        lastKnownPositionMarker = mMap.addMarker(
+//                new MarkerOptions()
+//                        .position(myUtils.latLngFromLocation(lastKnownLocation))
+//                        .title("Position actuelle")
+//                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+//        );
+//
+//        if (lastKnownLocation != null && selectedPlacesMarker != null) {
+//            LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
+//            LatLng placePosition = selectedPlacesMarker.getPosition();
+//            if (myUtils.getDistanceInMeter(myPosition, placePosition) < MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION) {
+//                Log.e("Location ----------", "Marche" + myUtils.getDistanceInMeter(myPosition, placePosition));
+//            }
+//
+//        }
     }
 
     private void refreshMapWithResearch(LatLng searchEpicenter, double perimeter, ArrayList<MarkerOptions> placesMarkers) {
@@ -583,7 +656,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onStart() {
         super.onStart();
-        startLocationUpdates();
     }
 
     @Override
@@ -591,37 +663,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         super.onStop();
     }
 
-    @SuppressLint("MissingPermission")
-    protected void startLocationUpdates() {
-        locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
-
-        if (locationManager != null) {
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-                List<String> providers = locationManager.getProviders(true);
-
-                for (String provider : providers) {
-                    Location l = locationManager.getLastKnownLocation(provider);
-                    if (l == null) {
-                        continue;
-                    }
-                    if (lastKnownLocation == null || l.getAccuracy() < lastKnownLocation.getAccuracy()) {
-                        lastKnownLocation = l;
-                    }
-                }
-                if (lastKnownLocation == null) {
-                    Log.w("DEBUG", "LastKnownLocation is null");
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
+//    @SuppressLint("MissingPermission")
+//    protected void startLocationUpdates() {
+//        locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
+//
+//        if (locationManager != null) {
+//            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
+//
+//                List<String> providers = locationManager.getProviders(true);
+//
+//                for (String provider : providers) {
+//                    Location l = locationManager.getLastKnownLocation(provider);
+//                    if (l == null) {
+//                        continue;
+//                    }
+//                    if (lastKnownLocation == null || l.getAccuracy() < lastKnownLocation.getAccuracy()) {
+//                        lastKnownLocation = l;
+//                    }
+//                }
+//                if (lastKnownLocation == null) {
+//                    Log.w("DEBUG", "LastKnownLocation is null");
+//                }
+//            }
+//        }
+//    }
 
     protected void stopLocationUpdates() {
         locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
@@ -631,11 +697,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 locationManager.removeUpdates(this);
             }
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        startLocationUpdates();
     }
 }
