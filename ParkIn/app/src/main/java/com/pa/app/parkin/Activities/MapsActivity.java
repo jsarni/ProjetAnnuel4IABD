@@ -116,6 +116,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private FusedLocationProviderClient fusedLocationClient;
     private boolean askForPlace = true;
     private boolean updatedCurrentLocation = false;
+    private boolean focusOnPosition = true;
     private final LatLng defaultParisLatLng = new LatLng(48.866667, 2.333333);
 
     private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 50;
@@ -236,6 +237,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                focusOnPosition = false;
+
                 Log.i("buttons", "clicked on search button to find places");
                 Context context = getApplicationContext();
 
@@ -325,6 +328,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         rollBackToMainInterfaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                focusOnPosition = true;
                 myUtils.showHide(rollBackToMainInterfaceButton);
                 mMap.clear();
 
@@ -462,8 +466,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createLocationRequest() {
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(250);
-        locationRequest.setFastestInterval(125);
+        locationRequest.setInterval(50);
+        locationRequest.setFastestInterval(25);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -508,11 +512,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
                         }
                         Log.e("POSITION ----", String.format("%f, %f", lastKnownPositionMarker.getPosition().latitude, lastKnownPositionMarker.getPosition().longitude));
+                    } else if (lastKnownLocation != null && focusOnPosition) {
+                        LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
+                        float zoomLevel = getZoomLevel();
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, zoomLevel));
                     }
-//                    else if (lastKnownLocation != null) {
-//                        LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
-//                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, DEFAULT_ZOOM_LEVEL));
-//                    }
                     Log.e("LOCATIONRES --", String.format("%f,%f",location.getLatitude(), location.getLongitude()));
                     Log.e("LASTKNOWN --", String.format("%f,%f",lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()));
                 }
@@ -558,7 +562,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myUtils.showHide(feedbackFoundImage);
 
                 selectedPlacesMarker = null;
-
+                focusOnPosition = true;
             }
         });
     }
@@ -598,6 +602,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         int circleBorderWidth = 2;
         float zoomLevel = myUtils.getZoomLevel(perimeter);
 
+
         mMap.addMarker(
                 new MarkerOptions()
                         .position(searchEpicenter)
@@ -618,6 +623,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void refreshMapToCurrentPosition() {
+        focusOnPosition = true;
         if (lastKnownLocation != null) {
             LatLng currentLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
             if (lastKnownPositionMarker != null) {
@@ -629,7 +635,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .title("Position Marker")
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             );
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, DEFAULT_ZOOM_LEVEL));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, getZoomLevel()));
         }
     }
 
@@ -833,5 +839,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 locationManager.removeUpdates(this);
             }
         }
+    }
+
+    private float getZoomLevel(){
+        float currentZoomLevel = mMap.getCameraPosition().zoom;
+        float zoomLevel;
+        if (currentZoomLevel > 8) {
+            zoomLevel = currentZoomLevel;
+        } else {
+            zoomLevel = DEFAULT_ZOOM_LEVEL;
+        }
+        return zoomLevel;
     }
 }
