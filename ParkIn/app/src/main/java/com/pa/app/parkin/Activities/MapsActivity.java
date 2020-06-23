@@ -117,6 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean askForPlace = true;
     private boolean updatedCurrentLocation = false;
     private boolean focusOnPosition = true;
+    private  boolean selectedAPlaceForRoute = false;
     private final LatLng defaultParisLatLng = new LatLng(48.866667, 2.333333);
 
     private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 50;
@@ -282,7 +283,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                                 @Override
                                 public boolean onMarkerClick(final Marker marker) {
+                                    focusOnPosition = false;
+                                    if (selectedPlacesMarker != null) {
+                                        selectedPlacesMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                                    }
                                     selectedPlacesMarker = marker;
+                                    selectedPlacesMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));
 
                                     foundPlacesForMarkerTextview.setVisibility(View.VISIBLE);
                                     selectPlacesMarkerButton.setVisibility(View.VISIBLE);
@@ -297,8 +303,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     foundPlacesForMarkerTextview.setText(getString(R.string.number_found_places_for_marker_text, nb_found_places));
                                     mMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
 
-
-
                                     return true;
                                 }
                             });
@@ -312,6 +316,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         selectPlacesMarkerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                selectedAPlaceForRoute = true;
                 drawRouteToPlace(selectedPlacesMarker.getPosition());
                 LatLng lastKnownPositionLatLng = new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                 LatLng middlePoint = myUtils.getMiddleLatLng(
@@ -329,6 +334,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 focusOnPosition = true;
+                selectedAPlaceForRoute = false;
                 myUtils.showHide(rollBackToMainInterfaceButton);
                 mMap.clear();
 
@@ -495,7 +501,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                     );
 
-                    if (lastKnownLocation != null && selectedPlacesMarker != null) {
+                    if (lastKnownLocation != null && selectedPlacesMarker != null && selectedAPlaceForRoute) {
                         LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
                         LatLng placePosition = selectedPlacesMarker.getPosition();
 
@@ -549,6 +555,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myUtils.showHide(feedbackNotFoundPlaceButton);
 
                 selectedPlacesMarker = null;
+                selectedAPlaceForRoute = false;
             }
         });
 
@@ -563,6 +570,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 selectedPlacesMarker = null;
                 focusOnPosition = true;
+                selectedAPlaceForRoute = false;
             }
         });
     }
@@ -607,7 +615,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 new MarkerOptions()
                         .position(searchEpicenter)
                         .title("Epicentre recherche")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         );
 
         addPlaceMarkersToMap(placesMarkers);
