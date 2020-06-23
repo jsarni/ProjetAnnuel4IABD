@@ -358,15 +358,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         float zoomLevel = 17;
 
-        createLocationRequest();
-        createLocationUpdatesCallback();
-        createFusedLocationClient();
+        askForPermissions();
+        if (!gotPermissions()) {
+            myUtils.showToast(MapsActivity.this, getString(R.string.location_permission_error_message));
+        } else {
 
-        updateCurrentPosition();
-        LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, zoomLevel));
+            createLocationRequest();
+            createLocationUpdatesCallback();
+            createFusedLocationClient();
 
-        startLocationUpdates();
+            updateCurrentPosition();
+            LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, zoomLevel));
+
+            startLocationUpdates();
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -456,6 +462,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 askForPlace = false;
                             }
                         }
+                        Log.e("POSITION ----", String.format("%f, %f", lastKnownPositionMarker.getPosition().latitude, lastKnownPositionMarker.getPosition().longitude));
                     }
                     Log.e("LOCATIONRES --", String.format("%f,%f",location.getLatitude(), location.getLongitude()));
                     Log.e("LOCATIONRES --", String.format("%f,%f",location.getLatitude(), location.getLongitude()));
