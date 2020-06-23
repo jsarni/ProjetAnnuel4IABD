@@ -286,5 +286,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="120dp"
-        map:srcCompat="@drawable/success_icon_1" />
+        android:src="@drawable/success_icon_1" />
 </RelativeLayout>

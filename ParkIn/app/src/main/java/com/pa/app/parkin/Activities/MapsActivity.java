@@ -113,10 +113,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private FusedLocationProviderClient fusedLocationClient;
-    private boolean foundAPlace = false;
-    private boolean askingForFeedback = false;
+    private boolean askForPlace = true;
 
-    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 10000;
+    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,6 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myUtils.showHide(searchPerimeter);
                 myUtils.showHide(searchButton);
                 myUtils.showHide(selectCurrentAddressButton);
+                askForPlace = false;
             }
         });
 
@@ -314,6 +314,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 float zoomLevel = myUtils.getZoomLevel(distance / 2);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(middlePoint, zoomLevel));
                 myUtils.showHide(selectPlacesMarkerButton);
+                askForPlace = true;
             }
         });
 
@@ -411,8 +412,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void createLocationRequest() {
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000);
-        locationRequest.setFastestInterval(500);
+        locationRequest.setInterval(250);
+        locationRequest.setFastestInterval(125);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -442,11 +443,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     if (lastKnownLocation != null && selectedPlacesMarker != null) {
                         LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
                         LatLng placePosition = selectedPlacesMarker.getPosition();
-                        if (myUtils.getDistanceInMeter(myPosition, placePosition) < MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION) {
-                            Log.e("Location ----------", "Marche" + myUtils.getDistanceInMeter(myPosition, placePosition));
-                            if(!foundAPlace && !askingForFeedback) {
+
+                        LatLng middlePoint = myUtils.getMiddleLatLng(myPosition, placePosition);
+                        double distance = myUtils.getDistanceInMeter(myPosition, placePosition);
+
+                        float zoomLevel = myUtils.getZoomLevel(distance / 2);
+
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(middlePoint, zoomLevel));
+                        if (distance < MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION) {
+                            if(askForPlace) {
                                 manageFeedback();
-                                askingForFeedback = true;
+                                askForPlace = false;
                             }
                         }
                     }
@@ -467,7 +474,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 //        feedbackNotFoundPlaceButton.setVisibility(View.VISIBLE);
 
         myUtils.showHide(foundPlacesForMarkerTextview);
-        myUtils.showHide(selectPlacesMarkerButton);
         myUtils.showHide(feedbackView);
         myUtils.showHide(feedbackMessageTextView);
         myUtils.showHide(feedbackFoundPlaceButton);
@@ -476,26 +482,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         feedbackNotFoundPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                askingForFeedback = false;
-                foundAPlace = false;
                 myUtils.showHide(foundPlacesForMarkerTextview);
-                myUtils.showHide(selectPlacesMarkerButton);
                 myUtils.showHide(feedbackView);
                 myUtils.showHide(feedbackMessageTextView);
                 myUtils.showHide(feedbackFoundPlaceButton);
                 myUtils.showHide(feedbackNotFoundPlaceButton);
+
+                selectedPlacesMarker = null;
             }
         });
 
         feedbackFoundPlaceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                foundAPlace = true;
                 myUtils.showHide(feedbackView);
                 myUtils.showHide(feedbackMessageTextView);
                 myUtils.showHide(feedbackFoundPlaceButton);
                 myUtils.showHide(feedbackNotFoundPlaceButton);
                 myUtils.showHide(feedbackFoundImage);
+
+                selectedPlacesMarker = null;
 
             }
         });
