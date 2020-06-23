@@ -59,9 +59,12 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsStep;
 import com.google.maps.model.EncodedPolyline;
 import com.pa.app.parkin.DataTasks.PlaceSearchTask;
+import com.pa.app.parkin.DataTasks.SaveUserFeedbakTask;
 import com.pa.app.parkin.Horodateur;
 import com.pa.app.parkin.SearchContext;
 import com.pa.app.parkin.R;
+import com.pa.app.parkin.User;
+import com.pa.app.parkin.UserFeedback;
 import com.pa.app.parkin.Utils.DatePickerFragment;
 import com.pa.app.parkin.Utils.DevUtils;
 import com.pa.app.parkin.Utils.PermissionManager;
@@ -556,6 +559,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 selectedPlacesMarker = null;
                 selectedAPlaceForRoute = false;
+
+                UserFeedback feedback = new UserFeedback(
+                        ConnectionActivity.appUser.getUserId(),
+                        selectedPlacesMarker.getPosition().latitude,
+                        selectedPlacesMarker.getPosition().longitude,
+                        dateOfSearch,
+                        0
+                );
+
+                SaveUserFeedbakTask mySaveTask = new SaveUserFeedbakTask();
+
+                try {
+                    boolean saveSucceded = mySaveTask.execute(feedback).get();
+                    if (!saveSucceded){
+                        Log.e("FeedbackError", "Couldn't save the feedback");
+                    }
+                } catch (Exception e) {
+                    Log.e("FeedbackError", e.getMessage());
+                }
             }
         });
 
@@ -571,6 +593,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 selectedPlacesMarker = null;
                 focusOnPosition = true;
                 selectedAPlaceForRoute = false;
+
+                UserFeedback feedback = new UserFeedback(
+                        ConnectionActivity.appUser.getUserId(),
+                        selectedPlacesMarker.getPosition().latitude,
+                        selectedPlacesMarker.getPosition().longitude,
+                        dateOfSearch,
+                        1
+                );
+
+                SaveUserFeedbakTask mySaveTask = new SaveUserFeedbakTask();
+
+                try {
+                    boolean saveSucceded = mySaveTask.execute(feedback).get();
+                    if (!saveSucceded){
+                        Log.e("FeedbackError", "Couldn't save the feedback");
+                    }
+                } catch (Exception e) {
+                    Log.e("FeedbackError", e.getMessage());
+                }
             }
         });
     }
