@@ -22,8 +22,8 @@
         android:text="@string/user_general_parameters_button_text"
         android:gravity="center"
         android:textSize="15sp"
-        android:layout_weight="0.5"
-        android:layout_marginTop="15dp"
+        android:layout_weight="0.7"
+        android:layout_marginTop="25dp"
         />
 
     <Button
@@ -34,21 +34,9 @@
         android:text="@string/user_connection_parameters_button_text"
         android:gravity="center"
         android:textSize="15sp"
-        android:layout_weight="0.5"
+        android:layout_weight="0.7"
         android:layout_marginTop="15dp"
-        />
-
-    <Button
-        android:id="@+id/user_address_preferences_button"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/user_address_preferences_button_text"
-        android:gravity="center"
-        android:textSize="15sp"
-        android:layout_weight="0.5"
-        android:layout_marginBottom="100dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginBottom="70dp"
         />
 
     <Button
@@ -59,8 +47,8 @@
         android:text="Retour"
         android:gravity="center"
         android:textSize="15sp"
-        android:layout_weight="0.2"
-        android:layout_marginBottom="70dp"
+        android:layout_weight="0.3"
+        android:layout_marginBottom="80dp"
         />
 
 </LinearLayout>
