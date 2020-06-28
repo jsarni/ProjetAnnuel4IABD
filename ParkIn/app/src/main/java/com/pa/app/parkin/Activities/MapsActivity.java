@@ -123,7 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private  boolean selectedAPlaceForRoute = false;
     private final LatLng defaultParisLatLng = new LatLng(48.866667, 2.333333);
 
-    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 50;
+    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 4000;
     private float DEFAULT_ZOOM_LEVEL = 17;
 
     @Override
@@ -590,9 +590,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myUtils.showHide(feedbackNotFoundPlaceButton);
                 myUtils.showHide(feedbackFoundImage);
 
-                selectedPlacesMarker = null;
-                focusOnPosition = true;
-                selectedAPlaceForRoute = false;
 
                 UserFeedback feedback = new UserFeedback(
                         ConnectionActivity.appUser.getUserId(),
@@ -603,6 +600,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 );
 
                 SaveUserFeedbakTask mySaveTask = new SaveUserFeedbakTask();
+
+                selectedPlacesMarker = null;
+                focusOnPosition = true;
+                selectedAPlaceForRoute = false;
 
                 try {
                     boolean saveSucceded = mySaveTask.execute(feedback).get();
