@@ -22,7 +22,6 @@ public class UserActivity extends Activity {
 
         Button generalParametersButton = (Button) findViewById(R.id.user_general_parameters_button);
         Button connectionParametersButton = (Button) findViewById(R.id.user_connection_parameters_button);
-        Button userAddressPreferencesButton = (Button) findViewById(R.id.user_address_preferences_button);
         Button generalParametersReturnButton = (Button) findViewById(R.id.user_interface_return_button);
 
         generalParametersButton.setOnClickListener(new View.OnClickListener() {
