@@ -565,8 +565,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 myUtils.showHide(feedbackFoundPlaceButton);
                 myUtils.showHide(feedbackNotFoundPlaceButton);
 
-                selectedPlacesMarker = null;
-                selectedAPlaceForRoute = false;
 
                 UserFeedback feedback = new UserFeedback(
                         ConnectionActivity.appUser.getUserId(),
@@ -578,6 +576,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 SaveUserFeedbakTask mySaveTask = new SaveUserFeedbakTask();
 
+                selectedPlacesMarker = null;
+                selectedAPlaceForRoute = false;
                 try {
                     boolean saveSucceded = mySaveTask.execute(feedback).get();
                     if (!saveSucceded){
