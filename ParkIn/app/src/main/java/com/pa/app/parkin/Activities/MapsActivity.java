@@ -121,10 +121,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean updatedCurrentLocation = false;
     private boolean focusOnPosition = true;
     private  boolean selectedAPlaceForRoute = false;
-    private final LatLng defaultParisLatLng = new LatLng(48.866667, 2.333333);
+    private final LatLng defaultParisLatLng = new LatLng(48.8534, 2.3488);
 
     private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 4000;
-    private float DEFAULT_ZOOM_LEVEL = 17;
+    private final float DEFAULT_ZOOM_LEVEL = 17;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -382,16 +382,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             createLocationUpdatesCallback();
             createFusedLocationClient();
 
-            initLastKnownLocation();
+            float zoomLevel = initLastKnownLocation();
             LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, DEFAULT_ZOOM_LEVEL));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, zoomLevel));
 
             startLocationUpdates();
         }
     }
 
     @SuppressLint("MissingPermission")
-    private void initLastKnownLocation() {
+    private float initLastKnownLocation() {
         locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
 
         if (locationManager != null) {
@@ -416,20 +416,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         .title("Position actuelle")
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                     }
+                    return DEFAULT_ZOOM_LEVEL;
                 }
                 if (lastKnownLocation == null) {
-                    lastKnownLocation = new Location(LocationManager.GPS_PROVIDER);
-                    lastKnownLocation.setLatitude(defaultParisLatLng.latitude);
-                    lastKnownLocation.setLongitude(defaultParisLatLng.longitude);
-
-                    lastKnownPositionMarker = mMap.addMarker(
-                            new MarkerOptions()
-                                    .position(defaultParisLatLng)
-                                    .title("Paris")
-                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    setLocationToDefault();
                 }
+            } else {
+                setLocationToDefault();
             }
         }
+        return 13;
+    }
+
+    public void setLocationToDefault() {
+        lastKnownLocation = new Location(LocationManager.GPS_PROVIDER);
+        lastKnownLocation.setLatitude(defaultParisLatLng.latitude);
+        lastKnownLocation.setLongitude(defaultParisLatLng.longitude);
+
+        lastKnownPositionMarker = mMap.addMarker(
+                new MarkerOptions()
+                        .position(defaultParisLatLng)
+                        .title("Paris")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
     }
     @SuppressLint("MissingPermission")
     public boolean currentPositionIsUpdated() {
