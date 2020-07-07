@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.pa.app.parkin.UserFeedback;
 
-import java.io.BufferedReader;
 import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.net.URLConnection;
@@ -13,7 +12,7 @@ import java.net.URLEncoder;
 
 public class SaveUserFeedbakTask extends AsyncTask<UserFeedback, Void, Boolean> {
 
-    private String feedbackSaveScript = "http://projetannuel4iabd.yj.fr/user_feedback.php";
+    private String feedbackSaveScript = "http://ec2-54-174-245-36.compute-1.amazonaws.com/user_feedback.php";
 
     @Override
     protected Boolean doInBackground(UserFeedback... feedbacks) {
@@ -30,8 +29,6 @@ public class SaveUserFeedbakTask extends AsyncTask<UserFeedback, Void, Boolean> 
             data += "&" + URLEncoder.encode("status", "UTF-8") + "=" + URLEncoder.encode(myfeedback.status, "UTF-8");
             data += "&" + URLEncoder.encode("validation_datetime", "UTF-8") + "=" + URLEncoder.encode(myfeedback.userValidationDate, "UTF-8");
 
-            BufferedReader reader;
-
             URL url = new URL(feedbackSaveScript);
 
             URLConnection conn = url.openConnection();
@@ -43,7 +40,7 @@ public class SaveUserFeedbakTask extends AsyncTask<UserFeedback, Void, Boolean> 
 
             res = true;
         } catch (Exception ex) {
-            Log.i("log_tag", "Error " + ex.toString());
+            Log.e("SaveUserFeedbackError", ex.toString());
         } finally {
             return res;
         }

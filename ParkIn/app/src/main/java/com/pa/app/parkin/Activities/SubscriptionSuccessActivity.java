@@ -23,8 +23,6 @@ public class SubscriptionSuccessActivity extends Activity {
         redirectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("buttons", "clicked on connexion redirection button");
-
                 Intent welcomeIntent = new Intent(SubscriptionSuccessActivity.this, WelcomActivity.class);
                 startActivity(welcomeIntent);
             }

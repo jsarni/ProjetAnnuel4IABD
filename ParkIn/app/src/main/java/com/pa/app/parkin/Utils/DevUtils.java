@@ -59,7 +59,7 @@ public class DevUtils {
     public LatLng getLocationFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
-        LatLng p1 = null;
+        LatLng p1;
 
         try {
             address = coder.getFromLocationName(strAddress, 1);

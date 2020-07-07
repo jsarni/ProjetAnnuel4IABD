@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 
 public class LoadUserTask extends AsyncTask<String, Void, User> {
 
-    private String connexionScript = "http://projetannuel4iabd.yj.fr/user_connection.php";
+    private String connexionScript = "http://ec2-54-174-245-36.compute-1.amazonaws.com/user_connection.php";
 
     @Override
     protected User doInBackground(String... strings) {
@@ -27,56 +27,36 @@ public class LoadUserTask extends AsyncTask<String, Void, User> {
             return null;
         } else {
 
-            Log.i("Connexion", "Started");
             try {
                 String data = URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(strings[0], "UTF-8");
-
                 data += "&" + URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(strings[1], "UTF-8");
 
                 BufferedReader reader;
 
-                Log.i("Connexion", "URL Createing");
-
                 URL url = new URL(connexionScript);
-                Log.i("Connexion", "URL Created");
-
 
                 URLConnection conn = url.openConnection();
-                Log.i("Connexion", "Connexion Opened");
                 conn.setDoOutput(true);
-                Log.i("Connexion", "1");
+
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                Log.i("Connexion", "2");
                 wr.write(data);
-                Log.i("Connexion", "3");
                 wr.flush();
-                Log.i("Connexion", "4");
 
-
-                Log.i("Connexion", "Started reading");
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 StringBuilder sb = new StringBuilder();
                 String line;
 
                 while ((line = reader.readLine()) != null) {
-                    // Append server response in string
                     sb.append(line + "\n");
                 }
 
                 String result = sb.toString();
-
-                Log.i("Connexion", "Transforming to json");
                 JSONArray users_jArray = new JSONArray(result);
-
-                Log.i("Connecion", "Length of returned json array" + users_jArray.length());
-                Log.i("Connexion", users_jArray.toString());
 
                 if (users_jArray.length() == 1) {
 
-                    Log.i("Connexion", "Getting user data");
                     JSONObject user_data = users_jArray.getJSONObject(0);
 
-                    Log.i("Connexion", "Creating user");
                     user = new User(
                             user_data.getInt("user_id"),
                             user_data.getString("user_lastname"),
@@ -86,11 +66,10 @@ public class LoadUserTask extends AsyncTask<String, Void, User> {
                             user_data.getString("user_password"),
                             user_data.getString("user_subscription_date")
                     );
-                    Log.i("Connexion", "User Created");
                 }
 
             } catch (Exception ex) {
-                Log.i("log_tag", "Error " + ex.getMessage() + ex.toString());
+                Log.e("LoadUserError", ex.getMessage());
             } finally {
                 return user;
             }

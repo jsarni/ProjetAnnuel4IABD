@@ -33,20 +33,16 @@ public class ConnectionActivity extends Activity {
         connectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("buttons", "clicked on connexion button to validate connexion");
 
                 LoadUserTask myLoadTask = new LoadUserTask();
 
                 try {
-                    Log.i("Connexion", "launched load Task");
                     appUser = myLoadTask.execute(
                             userEmail.getText().toString(),
                             userPassword.getText().toString()
                     ).get();
-                    Log.i("Connexion", "finished load Task with no error");
                 } catch (Exception e) {
-                    Log.i("Connexion", "finished load Task with error");
-                    Log.i("LoadingException", e.getMessage());
+                    Log.e("LoadingException", e.getMessage());
                 }
 
 

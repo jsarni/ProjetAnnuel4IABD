@@ -8,12 +8,6 @@ public class Horodateur {
     private LatLng geoPoint;
     private int numberOfPlaces;
 
-    public Horodateur(String id, LatLng geoPoint, int numberOfPlaces) {
-        this.id = id;
-        this.geoPoint = geoPoint;
-        this.numberOfPlaces = numberOfPlaces;
-    }
-
     public Horodateur(String id, double lat, double lng, int numberOfPlaces) {
         this.id = id;
         this.geoPoint = new LatLng(lat, lng);

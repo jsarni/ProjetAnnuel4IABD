@@ -28,11 +28,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -49,7 +44,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
@@ -63,17 +57,14 @@ import com.pa.app.parkin.DataTasks.SaveUserFeedbakTask;
 import com.pa.app.parkin.Horodateur;
 import com.pa.app.parkin.SearchContext;
 import com.pa.app.parkin.R;
-import com.pa.app.parkin.User;
 import com.pa.app.parkin.UserFeedback;
 import com.pa.app.parkin.Utils.DatePickerFragment;
 import com.pa.app.parkin.Utils.DevUtils;
 import com.pa.app.parkin.Utils.PermissionManager;
 import com.pa.app.parkin.Utils.TimePickerFragment;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener, LocationListener {
@@ -123,7 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private  boolean selectedAPlaceForRoute = false;
     private final LatLng defaultParisLatLng = new LatLng(48.8534, 2.3488);
 
-    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 4000;
+    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 50;
     private final float DEFAULT_ZOOM_LEVEL = 17;
 
     @Override
@@ -243,7 +234,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 focusOnPosition = false;
 
-                Log.i("buttons", "clicked on search button to find places");
                 Context context = getApplicationContext();
 
                 String address = searchAddress.getText().toString();
@@ -439,45 +429,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .title("Paris")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
     }
-    @SuppressLint("MissingPermission")
+
     public boolean currentPositionIsUpdated() {
-//        locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
-//
-//        if (locationManager != null) {
-//            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-//                locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, this, null);
-//
-//                List<String> providers = locationManager.getProviders(true);
-//
-//                for (String provider : providers) {
-//                    Location l = locationManager.getLastKnownLocation(provider);
-//                    if (l == null) {
-//                        continue;
-//                    }
-//                    if (lastKnownLocation == null || l.getAccuracy() < lastKnownLocation.getAccuracy()) {
-//                        lastKnownLocation = l;
-//                        if (lastKnownPositionMarker != null) {
-//                            lastKnownPositionMarker.remove();
-//                        }
-//                        lastKnownPositionMarker = mMap.addMarker(
-//                                new MarkerOptions()
-//                                .position(myUtils.latLngFromLocation(lastKnownLocation))
-//                                .title("Position actuelle")
-//                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-//                    }
-//                }
-//                if(lastKnownLocation == null) {
-//                    Log.w("DEBUG", "LastKnownLocation is null");
-//                }
-//                return true;
-//            } else {
-//                myUtils.showToast(MapsActivity.this,  getString(R.string.location_refresh_error));
-//                return false;
-//            }
-//        } else {
-//            myUtils.showToast(MapsActivity.this,  "Un problème est survenu lors de la localisation");
-//            return false;
-//        }
         return updatedCurrentLocation;
     }
 
@@ -528,27 +481,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 askForPlace = false;
                             }
                         }
-                        Log.e("POSITION ----", String.format("%f, %f", lastKnownPositionMarker.getPosition().latitude, lastKnownPositionMarker.getPosition().longitude));
                     } else if (lastKnownLocation != null && focusOnPosition) {
                         LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
                         float zoomLevel = getZoomLevel();
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myPosition, zoomLevel));
                     }
-                    Log.e("LOCATIONRES --", String.format("%f,%f",location.getLatitude(), location.getLongitude()));
-                    Log.e("LASTKNOWN --", String.format("%f,%f",lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()));
                 }
             }
         };
     }
 
     private void manageFeedback(){
-
-//        foundPlacesForMarkerTextview.setVisibility(View.GONE);
-//        selectPlacesMarkerButton.setVisibility(View.GONE);
-//        feedbackView.setVisibility(View.VISIBLE);
-//        feedbackMessageTextView.setVisibility(View.VISIBLE);
-//        feedbackFoundPlaceButton.setVisibility(View.VISIBLE);
-//        feedbackNotFoundPlaceButton.setVisibility(View.VISIBLE);
 
         myUtils.showHide(foundPlacesForMarkerTextview);
         myUtils.showHide(feedbackView);
@@ -632,26 +575,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
     @Override
     public void onLocationChanged(Location location) {
-
-//        lastKnownLocation = location;
-//        if (lastKnownPositionMarker != null) {
-//            lastKnownPositionMarker.remove();
-//        }
-//        lastKnownPositionMarker = mMap.addMarker(
-//                new MarkerOptions()
-//                        .position(myUtils.latLngFromLocation(lastKnownLocation))
-//                        .title("Position actuelle")
-//                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-//        );
-//
-//        if (lastKnownLocation != null && selectedPlacesMarker != null) {
-//            LatLng myPosition = myUtils.latLngFromLocation(lastKnownLocation);
-//            LatLng placePosition = selectedPlacesMarker.getPosition();
-//            if (myUtils.getDistanceInMeter(myPosition, placePosition) < MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION) {
-//                Log.e("Location ----------", "Marche" + myUtils.getDistanceInMeter(myPosition, placePosition));
-//            }
-//
-//        }
     }
 
     private void refreshMapWithResearch(LatLng searchEpicenter, double perimeter, ArrayList<MarkerOptions> placesMarkers) {
@@ -861,42 +784,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onStop() {
         super.onStop();
-    }
-
-//    @SuppressLint("MissingPermission")
-//    protected void startLocationUpdates() {
-//        locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
-//
-//        if (locationManager != null) {
-//            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
-//
-//                List<String> providers = locationManager.getProviders(true);
-//
-//                for (String provider : providers) {
-//                    Location l = locationManager.getLastKnownLocation(provider);
-//                    if (l == null) {
-//                        continue;
-//                    }
-//                    if (lastKnownLocation == null || l.getAccuracy() < lastKnownLocation.getAccuracy()) {
-//                        lastKnownLocation = l;
-//                    }
-//                }
-//                if (lastKnownLocation == null) {
-//                    Log.w("DEBUG", "LastKnownLocation is null");
-//                }
-//            }
-//        }
-//    }
-
-    protected void stopLocationUpdates() {
-        locationManager = (LocationManager) MapsActivity.this.getSystemService(LOCATION_SERVICE);
-
-        if (locationManager != null) {
-            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                locationManager.removeUpdates(this);
-            }
-        }
     }
 
     private float getZoomLevel(){

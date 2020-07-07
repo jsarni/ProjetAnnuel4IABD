@@ -42,8 +42,6 @@ public class UserConnectionParametersActivity extends Activity {
         validationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.w("debug", "entered button");
-
                 String newEmailContent = ConnectionActivity.appUser.getEmail();
                 String newPasswordContent = ConnectionActivity.appUser.getPassword();
 
@@ -81,8 +79,6 @@ public class UserConnectionParametersActivity extends Activity {
                     }
 
                     if (subscriptionResult.equals("0")){
-                        Log.i("buttons", "clicked on subscription button");
-
                         Intent successIntent = new Intent(UserConnectionParametersActivity.this, UserUpdateSuccessActivity.class);
                         startActivity(successIntent);
                     } else {
