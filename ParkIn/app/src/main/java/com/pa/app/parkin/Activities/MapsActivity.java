@@ -114,7 +114,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private  boolean selectedAPlaceForRoute = false;
     private final LatLng defaultParisLatLng = new LatLng(48.8534, 2.3488);
 
-    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 50;
+    private double MIN_DISTANCE_BETWEEN_PLACE_AND_POSITION = 4000;
     private final float DEFAULT_ZOOM_LEVEL = 17;
 
     @Override
