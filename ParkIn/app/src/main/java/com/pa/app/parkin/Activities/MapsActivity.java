@@ -278,7 +278,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 public boolean onMarkerClick(final Marker marker) {
                                     focusOnPosition = false;
                                     if (selectedPlacesMarker != null) {
-                                        selectedPlacesMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                                        String title = selectedPlacesMarker.getTitle();
+                                        LatLng markerPos = selectedPlacesMarker.getPosition();
+                                        selectedPlacesMarker.remove();
+                                        selectedPlacesMarker = mMap.addMarker(
+                                                new MarkerOptions()
+                                                        .position(markerPos)
+                                                        .title(title)
+                                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                                        );
                                     }
                                     selectedPlacesMarker = marker;
                                     selectedPlacesMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET));

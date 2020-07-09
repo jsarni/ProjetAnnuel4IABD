@@ -38,54 +38,36 @@ public class PlaceSearchTask extends AsyncTask<String, Void, ArrayList<Horodateu
                 String date = strings[3];
                 String hour = strings[4];
                 horodateurs = new ArrayList<Horodateur>();
-                Log.e("DEBUUUUG", "1");
 
-                Log.e("DEBUUUUUG", date);
                 String data = URLEncoder.encode("latitude", "UTF-8") + "=" + URLEncoder.encode(lat, "UTF-8");
                 data += "&" + URLEncoder.encode("longitude", "UTF-8") + "=" + URLEncoder.encode(lng, "UTF-8");
                 data += "&" + URLEncoder.encode("rayon", "UTF-8") + "=" + URLEncoder.encode(perimeter, "UTF-8");
                 data += "&" + URLEncoder.encode("date", "UTF-8") + "=" + URLEncoder.encode(date, "UTF-8");
                 data += "&" + URLEncoder.encode("heure", "UTF-8") + "=" + URLEncoder.encode(hour, "UTF-8");
 
-                Log.e("DEBUUUUG",data);
-                Log.e("DEBUUUUG", "2");
                 BufferedReader reader;
 
                 URL url = new URL(searchUrl);
-                Log.e("DEBUUUUG", "3");
 
                 URLConnection conn = url.openConnection();
-                Log.e("DEBUUUUG", "4");
                 conn.setDoOutput(true);
-                Log.e("DEBUUUUG", "5");
 
                 OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                Log.e("DEBUUUUG", conn.getOutputStream().toString());
                 wr.write(data);
-                Log.e("DEBUUUUG", "7");
 
                 wr.flush();
-                Log.e("DEBUUUUG", "8");
 
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                Log.e("DEBUUUUG", "9");
                 StringBuilder sb = new StringBuilder("");
                 String line;
 
                 while ((line = reader.readLine()) != null) {
                     sb.append(line + ",\n");
-                    Log.e("DEBUUUUG", line);
                 }
-                Log.e("DEBUUUUG", "10");
 
                 String result = sb.toString();
-                Log.e("DEBUUUUG", "11");
-                Log.e("DEBUUUUG", "11");
-
-//                result = result.substring(1, result.length() - 2);
 
                 JSONArray horodateurs_jArray = new JSONArray(result);
-                Log.e("DEBUUUUG", "12");
 
                 for(int i=0; i < horodateurs_jArray.length(); i++) {
                     JSONObject horodateur_data = horodateurs_jArray.getJSONObject(i);
