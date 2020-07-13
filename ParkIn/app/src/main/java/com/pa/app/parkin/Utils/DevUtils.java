@@ -40,6 +40,15 @@ public class DevUtils {
         return String.format("%02d/%02d/%d", day ,month, year);
     }
 
+    public String formattedDateToString2(Calendar date) {
+        int year = date.get(Calendar.YEAR);
+        int month = date.get(Calendar.MONTH) + 1;
+        int day = date.get(Calendar.DAY_OF_MONTH);
+
+
+        return String.format("%02d-%02d-%d", day ,month, year);
+    }
+
     public String formattedHourToString(Calendar date){
         int hour = date.get(Calendar.HOUR_OF_DAY);
         int minute = date.get(Calendar.MINUTE);
@@ -59,7 +68,7 @@ public class DevUtils {
     public LatLng getLocationFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
-        LatLng p1 = null;
+        LatLng p1;
 
         try {
             address = coder.getFromLocationName(strAddress, 1);

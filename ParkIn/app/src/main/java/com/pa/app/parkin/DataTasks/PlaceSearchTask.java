@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class PlaceSearchTask extends AsyncTask<String, Void, ArrayList<Horodateur>> {
 
     DevUtils devUtils = DevUtils.getInstance();
-    private String searchUrl = "http://projetannuel4iabd.yj.fr/script_search_place.php";
+    private String searchUrl = "http://ec2-54-174-245-36.compute-1.amazonaws.com/script_search_place.php";
 
     @Override
     protected ArrayList<Horodateur> doInBackground(String... strings) {
@@ -31,16 +31,13 @@ public class PlaceSearchTask extends AsyncTask<String, Void, ArrayList<Horodateu
             return null;
         } else {
 
-            Log.i("Connexion", "Started");
             try {
-                Log.w("==========> ", "1");
                 String lat = strings[0];
                 String lng = strings[1];
                 String perimeter = strings[2];
                 String date = strings[3];
                 String hour = strings[4];
                 horodateurs = new ArrayList<Horodateur>();
-
 
                 String data = URLEncoder.encode("latitude", "UTF-8") + "=" + URLEncoder.encode(lat, "UTF-8");
                 data += "&" + URLEncoder.encode("longitude", "UTF-8") + "=" + URLEncoder.encode(lng, "UTF-8");
@@ -50,57 +47,41 @@ public class PlaceSearchTask extends AsyncTask<String, Void, ArrayList<Horodateu
 
                 BufferedReader reader;
 
-                Log.w("==========> ", "2");
                 URL url = new URL(searchUrl);
-                Log.w("==========> ", "3");
 
                 URLConnection conn = url.openConnection();
-                Log.w("==========> ", "4");
                 conn.setDoOutput(true);
-                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-                Log.w("==========> ", "5");
-                wr.write(data);
-                Log.w("==========> ", "6");
-                wr.flush();
-                Log.w("==========> ", "7");
 
+                OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                wr.write(data);
+
+                wr.flush();
 
                 reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                Log.w("==========> ", "8");
-                StringBuilder sb = new StringBuilder("[");
+                StringBuilder sb = new StringBuilder("");
                 String line;
 
-                Log.w("==========> ", "9");
                 while ((line = reader.readLine()) != null) {
                     sb.append(line + ",\n");
                 }
 
-                Log.w("==========> ", "10");
-
                 String result = sb.toString();
-                result = result.substring(0, result.length() - 2) + "]";
 
-                Log.w("==========> ", result);
-                Log.w("==========> ", "11");
                 JSONArray horodateurs_jArray = new JSONArray(result);
 
-                Log.w("==========> ", "12");
                 for(int i=0; i < horodateurs_jArray.length(); i++) {
                     JSONObject horodateur_data = horodateurs_jArray.getJSONObject(i);
-                    Log.w("==========> ", "13");
 
                     horodateurs.add(
                             new Horodateur(
-                                    horodateur_data.getString("horodateur_id"),
                                     horodateur_data.getDouble("horodateur_latitude"),
                                     horodateur_data.getDouble("horodateur_longitude"),
                                     horodateur_data.getInt("horodateur_nb_places_reel")
                             ));
                 }
-                Log.w("==========> ", "14");
 
             } catch (Exception ex) {
-                Log.i("log_tag", "Error " + ex.getMessage() + ex.toString());
+                Log.e("PlaceSearchError", ex.toString());
             } finally {
                 return horodateurs;
             }
@@ -113,7 +94,7 @@ public class PlaceSearchTask extends AsyncTask<String, Void, ArrayList<Horodateu
         String lat = String.valueOf(searchContext.getPosition().latitude);
         String lng = String.valueOf(searchContext.getPosition().longitude);
         String perimeter = String.valueOf(searchContext.getPerimeter());
-        String date = devUtils.formattedDateToString(searchContext.getDateTimeContext());
+        String date = devUtils.formattedDateToString2(searchContext.getDateTimeContext());
         String hour = devUtils.formattedHourToString(searchContext.getDateTimeContext());
 
         try{

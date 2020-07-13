@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 
 public class SaveUserTask extends AsyncTask<User, Void, String> {
 
-    private String subscriptionScript = "http://projetannuel4iabd.yj.fr/user_inscription.php";
+    private String subscriptionScript = "http://ec2-54-174-245-36.compute-1.amazonaws.com/user_inscription.php";
 
     @Override
     protected String doInBackground(User... users) {
@@ -54,14 +54,12 @@ public class SaveUserTask extends AsyncTask<User, Void, String> {
                 }
 
                 String result = sb.toString();
-
                 JSONArray result_jArray = new JSONArray(result);
 
                 JSONObject insert_result_info = result_jArray.getJSONObject(0);
-
                 insertResult = insert_result_info.getString("code");
             } catch (Exception ex) {
-                Log.i("log_tag", "Error " + ex.toString());
+                Log.e("InscriptionError", ex.toString());
             } finally {
                 return insertResult;
             }

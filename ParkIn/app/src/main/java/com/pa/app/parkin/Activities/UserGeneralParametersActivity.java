@@ -79,8 +79,6 @@ public class UserGeneralParametersActivity extends Activity {
                     }
 
                     if (subscriptionResult.equals("0")){
-                        Log.i("buttons", "clicked on subscription button");
-
                         Intent successIntent = new Intent(UserGeneralParametersActivity.this, UserUpdateSuccessActivity.class);
                         startActivity(successIntent);
                     } else {

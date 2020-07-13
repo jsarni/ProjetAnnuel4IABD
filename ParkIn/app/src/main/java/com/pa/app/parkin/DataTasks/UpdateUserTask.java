@@ -17,7 +17,7 @@ import java.net.URLEncoder;
 
 public class UpdateUserTask extends AsyncTask<User, Void, String> {
 
-    private String subscriptionScript = "http://projetannuel4iabd.yj.fr/user_update.php";
+    private String subscriptionScript = "http://ec2-54-174-245-36.compute-1.amazonaws.com/user_update.php";
 
     @Override
     protected String doInBackground(User... users) {
@@ -60,7 +60,7 @@ public class UpdateUserTask extends AsyncTask<User, Void, String> {
 
                 updateResult = insert_result_info.getString("code");
             } catch (Exception ex) {
-                Log.i("log_tag", "Error " + ex.toString());
+                Log.e("UserUpdateError", ex.toString());
             } finally {
                 return updateResult;
             }

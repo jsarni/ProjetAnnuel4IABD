@@ -1,7 +1,6 @@
 package com.pa.app.parkin;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.util.Objects;
 
 

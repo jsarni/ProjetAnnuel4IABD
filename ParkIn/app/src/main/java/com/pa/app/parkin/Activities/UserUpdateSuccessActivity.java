@@ -23,8 +23,6 @@ public class UserUpdateSuccessActivity extends Activity {
         redirectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("buttons", "clicked on connexion redirection button");
-
                 Intent welcomeIntent = new Intent(UserUpdateSuccessActivity.this, UserActivity.class);
                 startActivity(welcomeIntent);
             }

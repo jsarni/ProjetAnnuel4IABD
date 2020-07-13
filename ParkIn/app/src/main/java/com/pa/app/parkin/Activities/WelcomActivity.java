@@ -23,8 +23,6 @@ public class WelcomActivity extends Activity {
         connexionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("buttons", "clicked on connexion button");
-
                 Intent connectionIntent = new Intent(WelcomActivity.this, ConnectionActivity.class);
                 startActivity(connectionIntent);
             }
@@ -33,8 +31,6 @@ public class WelcomActivity extends Activity {
         subscriptionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("buttons", "clicked on subscription button");
-
                 Intent subscriptionIntent = new Intent(WelcomActivity.this, SubscriptionActivity.class);
                 startActivity(subscriptionIntent);
             }

@@ -36,7 +36,6 @@ public class SubscriptionActivity extends Activity {
         validationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("buttons", "Clicked on subscription button");
                 if (userPassword.getText().toString().equals(userPasswordConfirmation.getText().toString())) {
 
                     User user = new User(
@@ -59,8 +58,6 @@ public class SubscriptionActivity extends Activity {
                     }
 
                     if (subscriptionResult.equals("0")){
-                        Log.i("buttons", "clicked on subscription button");
-
                         Intent successIntent = new Intent(SubscriptionActivity.this, SubscriptionSuccessActivity.class);
                         startActivity(successIntent);
                     } else {

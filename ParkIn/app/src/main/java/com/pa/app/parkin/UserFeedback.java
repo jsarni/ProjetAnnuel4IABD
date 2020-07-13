@@ -17,8 +17,8 @@ public class UserFeedback {
         this.userID = String.valueOf(userID);
         this.lat = String.valueOf(lat);
         this.lng = String.valueOf(lng);
-        this.date = String.format("%02d/02%d/%d", searchTime.get(Calendar.DAY_OF_MONTH), searchTime.get(Calendar.MONTH), searchTime.get(Calendar.YEAR));
-        this.hour = String.format("%02d:02%d", searchTime.get(Calendar.HOUR_OF_DAY), searchTime.get(Calendar.MINUTE));
+        this.date = String.format("%02d/%02d/%04d", searchTime.get(Calendar.DAY_OF_MONTH), searchTime.get(Calendar.MONTH)  + 1, searchTime.get(Calendar.YEAR));
+        this.hour = String.format("%02d:%02d", searchTime.get(Calendar.HOUR_OF_DAY), searchTime.get(Calendar.MINUTE));
         this.status = String.valueOf(status);
         SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         userValidationDate = format.format(new Date());
