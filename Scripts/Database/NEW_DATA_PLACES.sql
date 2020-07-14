@@ -1,0 +1,10 @@
+CREATE TABLE `NEW_DATA_PLACES` (
+  `user_id` varchar(10) NOT NULL,
+  `latitude` decimal(11,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `horodateur_id` varchar(11) DEFAULT NULL,
+  `jour_validation` varchar(20) DEFAULT NULL,
+  `heure` varchar(20) DEFAULT NULL,
+  `statut` varchar(1) DEFAULT NULL,
+  `jour` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1
