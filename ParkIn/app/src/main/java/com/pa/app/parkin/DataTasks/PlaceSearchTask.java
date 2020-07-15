@@ -72,12 +72,16 @@ public class PlaceSearchTask extends AsyncTask<String, Void, ArrayList<Horodateu
                 for(int i=0; i < horodateurs_jArray.length(); i++) {
                     JSONObject horodateur_data = horodateurs_jArray.getJSONObject(i);
 
-                    horodateurs.add(
-                            new Horodateur(
-                                    horodateur_data.getDouble("horodateur_latitude"),
-                                    horodateur_data.getDouble("horodateur_longitude"),
-                                    horodateur_data.getInt("horodateur_nb_places_reel")
-                            ));
+                    int nb_places = horodateur_data.getInt("horodateur_nb_places_reel");
+
+                    if (nb_places > 0) {
+                        horodateurs.add(
+                                new Horodateur(
+                                        horodateur_data.getDouble("horodateur_latitude"),
+                                        horodateur_data.getDouble("horodateur_longitude"),
+                                        nb_places
+                                ));
+                    }
                 }
 
             } catch (Exception ex) {
